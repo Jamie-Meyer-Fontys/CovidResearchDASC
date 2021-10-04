@@ -1,4 +1,4 @@
-Directory for our datasets, every day we add new sets since they are dynamic.
+Directory for our datasets, we specify the date of the the dataset since they change on a day by day basis
 
 IC Recordings variables:
 https://data.rivm.nl/meta/srv/dut/catalog.search#/metadata/45f911c4-3a62-42f1-b594-524a75db2c94
