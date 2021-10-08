@@ -6,23 +6,24 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+## Install Libraries
+install.packages("readr")
+install.packages("gglplot2")
 
-## R Markdown
+## Load Libraries 
+library(readr)
+library(ggplot2)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Import Data
+cov_ic_admissions <- read_csv2("../datasets/04-10/COVID-19_ic_opnames.csv")
+cov_hospital_admissions <- read_csv2("../datasets/04-10/COVID-19_ziekenhuisopnames.csv")
+cov_admissions_ranked_by_age <- read_csv2("../datasets/04-10/COVID-19_ziekenhuis_ic_opnames_per_leeftijdsgroep.csv")
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Clean Data
 
-```{r cars}
-summary(cars)
-```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Create Plots
+ggplot(data = cov_ic_admissions, mapping = aes(x = Date_of_statistics, y = IC_admission)) + geom_point()
+ggplot(data = cov_hospital_admissions, mapping = aes(x = Date_of_statistics, y = Hospital_admission)) + geom_point()
+ggplot(data = cov_admissions_ranked_by_age, mapping = aes(x = Age_group, y = IC_admission)) + geom_point()
+ggplot(data = cov_admissions_ranked_by_age, mapping = aes(x = Age_group, y = Hospital_admission)) + geom_point()
