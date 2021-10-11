@@ -1,29 +1,50 @@
 ---
 title: "CovidResearch"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
-
+## Install and load Libraries
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
-## Install Libraries
-install.packages("readr")
-install.packages("gglplot2")
-
-## Load Libraries 
+#install.packages('plyr')
+#install.packages("readr")
+#install.packages("gglplot2")
 library(readr)
 library(ggplot2)
-
+```
 ## Import Data
+```{r}
 cov_ic_admissions <- read_csv2("../datasets/04-10/COVID-19_ic_opnames.csv")
 cov_hospital_admissions <- read_csv2("../datasets/04-10/COVID-19_ziekenhuisopnames.csv")
 cov_admissions_ranked_by_age <- read_csv2("../datasets/04-10/COVID-19_ziekenhuis_ic_opnames_per_leeftijdsgroep.csv")
-
+```
 ## Clean Data
-
-
 ## Create Plots
-ggplot(data = cov_ic_admissions, mapping = aes(x = Date_of_statistics, y = IC_admission)) + geom_point()
-ggplot(data = cov_hospital_admissions, mapping = aes(x = Date_of_statistics, y = Hospital_admission)) + geom_point()
-ggplot(data = cov_admissions_ranked_by_age, mapping = aes(x = Age_group, y = IC_admission)) + geom_point()
-ggplot(data = cov_admissions_ranked_by_age, mapping = aes(x = Age_group, y = Hospital_admission)) + geom_point()
+### Covid IC Admissions
+```{r}
+cov_ic <- ggplot(data = cov_ic_admissions, mapping = aes(x = Date_of_statistics, y = IC_admission)) 
+cov_ic_plot <- cov_ic + geom_col() + geom_smooth()
+cov_ic_plot
+```
+
+### Covid Hosptial Admissions
+```{r}
+cov_hosp <- ggplot(data = cov_hospital_admissions, mapping = aes(x = Date_of_statistics, y = Hospital_admission))
+cov_hosp_plot <- cov_hosp + geom_col()
+cov_hosp_plot
+```
+
+### Covid IC Admissions by Age
+```{r}
+cov_ic_age <- ggplot(data = cov_admissions_ranked_by_age, mapping = aes(x = Age_group, y = IC_admission))
+cov_ic_age_plot <- cov_ic_age + geom_bar(stat="identity", fill = "steelblue")
+cov_ic_age_plot
+```
+
+### Covid Hospital Admissions by Age
+```{r}
+cov_hosp_age <- ggplot(data = cov_admissions_ranked_by_age, mapping = aes(x = Age_group, y = Hospital_admission))
+cov_hosp_age_plot <- cov_hosp_age + geom_bar(stat="identity", fill = "steelblue")
+cov_hosp_age_plot
+```
