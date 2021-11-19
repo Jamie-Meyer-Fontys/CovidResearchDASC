@@ -50,15 +50,12 @@ cov_hosp_age <- ggplot(data = cov_admissions_ranked_by_age, mapping = aes(x = Ag
 cov_hosp_age_plot <- cov_hosp_age + geom_bar(stat="identity", fill = "steelblue")
 cov_hosp_age_plot
 ```
-### Positive Covid Test Reports Per Province Over Time
+### Total Positive Covid Test Reports Per Province Over Time
 ```{r}
-  cov_pos_tests_per_province <- ggplot(data = cov_general_data, aes(Date_of_report, Total_reported))
-  cov_pos_tests_per_province_plot <- cov_pos_tests_per_province + 
-    geom_line(color = "steelblue", size = 1) +
-    geom_point(color="steelblue") + 
-    facet_wrap(~ Province)
-  
+  cov_pos_tests_per_province <- ggplot(data = cov_general_data, aes(Date_of_report, Total_reported, color = Province))
+  cov_pos_tests_per_province_plot <- cov_pos_tests_per_province + geom_col()
   cov_pos_tests_per_province_plot
+  #TODO combine friesland and fryslan numbers
 ```
 ### 2021 Resident Count Per Province 
 ```{r}
