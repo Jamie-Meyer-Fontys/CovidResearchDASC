@@ -15,9 +15,13 @@ library(ggplot2)
 ```
 ## Import Data
 ```{r}
-cov_ic_admissions <- read_csv2("../datasets/04-10/COVID-19_ic_opnames.csv")
-cov_hospital_admissions <- read_csv2("../datasets/04-10/COVID-19_ziekenhuisopnames.csv")
-cov_admissions_ranked_by_age <- read_csv2("../datasets/04-10/COVID-19_ziekenhuis_ic_opnames_per_leeftijdsgroep.csv")
+#Covid-19 Info
+cov_general_data<- read_csv2("../datasets/COVID-19_aantallen_gemeente_cumulatief.csv")
+cov_ic_admissions <- read_csv2("../datasets/COVID-19_ic_opnames.csv")
+cov_hospital_admissions <- read_csv2("../datasets/COVID-19_ziekenhuisopnames.csv")
+cov_admissions_ranked_by_age <- read_csv2("../datasets/COVID-19_ziekenhuis_ic_opnames_per_leeftijdsgroep.csv")
+#Other info
+res_count_per_province_nl <- read_csv2("../datasets/Bevolkings_aantallen_per_provincie.csv")
 ```
 ## Clean Data
 ## Create Plots
@@ -34,17 +38,29 @@ cov_hosp <- ggplot(data = cov_hospital_admissions, mapping = aes(x = Date_of_sta
 cov_hosp_plot <- cov_hosp + geom_col()
 cov_hosp_plot
 ```
-
 ### Covid IC Admissions by Age
 ```{r}
 cov_ic_age <- ggplot(data = cov_admissions_ranked_by_age, mapping = aes(x = Age_group, y = IC_admission))
 cov_ic_age_plot <- cov_ic_age + geom_bar(stat="identity", fill = "steelblue")
 cov_ic_age_plot
 ```
-
 ### Covid Hospital Admissions by Age
 ```{r}
 cov_hosp_age <- ggplot(data = cov_admissions_ranked_by_age, mapping = aes(x = Age_group, y = Hospital_admission))
 cov_hosp_age_plot <- cov_hosp_age + geom_bar(stat="identity", fill = "steelblue")
 cov_hosp_age_plot
+```
+### Positive Covid Test Reports Per Province Over Time
+```{r}
+  cov_pos_tests_per_province <- ggplot(data = cov_general_data, aes(Date_of_report, Total_reported))
+  cov_pos_tests_per_province_plot <- cov_pos_tests_per_province + 
+    geom_line(color = "steelblue", size = 1) +
+    geom_point(color="steelblue") + 
+    facet_wrap(~ Province)
+  
+  cov_pos_tests_per_province_plot
+```
+### 2021 Resident Count Per Province 
+```{r}
+  res_count_per_province_nl
 ```
