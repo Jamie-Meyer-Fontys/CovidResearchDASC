@@ -54,7 +54,9 @@ cov_hosp_age_plot
 ```
 ### Total Positive Covid Test Reports Per Province Over Time
 ```{r}
-  cov_pos_tests_per_province <- ggplot(data = cov_general_data, aes(Date_of_report, Total_reported, color = Province))
+  cov_general_data_mod <- cov_general_data
+  cov_general_data_mod$Province[which(cov_general_data_mod$Province == "Fryslân")] <- "Friesland"
+  cov_pos_tests_per_province <- ggplot(data = cov_general_data_mod, aes(Date_of_report, Total_reported, color = Province))
   cov_pos_tests_per_province_plot <- cov_pos_tests_per_province + geom_col()
   cov_pos_tests_per_province_plot
   #TODO combine friesland and fryslan numbers
