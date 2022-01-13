@@ -22,6 +22,7 @@ cov_ic_admissions <- read_csv2("../datasets/COVID-19_ic_opnames.csv")
 cov_hospital_admissions <- read_csv2("../datasets/COVID-19_ziekenhuisopnames.csv")
 cov_admissions_ranked_by_age <- read_csv2("../datasets/COVID-19_ziekenhuis_ic_opnames_per_leeftijdsgroep.csv")
 cov_home70 <- read_csv2("../datasets/COVID-19_thuiswonend_70plus.csv")
+cov_performed_tests <- read_csv2("../datasets/COVID-19_uitgevoerde_testen.csv")
 #Other info
 res_count_per_province_nl <- read_csv2("../datasets/Bevolkings_aantallen_per_provincie.csv")
 ```
@@ -71,4 +72,11 @@ cov_hosp_age_plot
   cov_70 <- ggplot(data = cov_home70_sub, mapping = aes(Security_region, Total_deceased_reported))
   cov_70_plot <- cov_70 + geom_bar(stat="identity", fill = "steelblue") + coord_flip()
   cov_70_plot
+```
+### Performed tests with positive overlap
+```{r}
+  cov_pt_sub <- subset(cov_performed_tests, Security_region_name != "Onbekend")
+  cov_pt <- ggplot(data = cov_pt_sub, mapping = aes(Security_region_name, Tested_with_result))
+  cov_pt_plot <- cov_pt + geom_bar(stat="identity", fill = "steelblue") + coord_flip()
+  cov_pt_plot
 ```
