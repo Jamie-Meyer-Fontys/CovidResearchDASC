@@ -64,7 +64,8 @@ cov_hosp_age_plot
 ```
 ### Age group at or above 70 total deceased reported
 ```{r}
-  cov_70 <- ggplot(data = cov_home70, mapping = aes(Security_region, Total_deceased_reported))
+  cov_home70_sub <- subset(cov_home70, Security_region != "Onbekend")
+  cov_70 <- ggplot(data = cov_home70_sub, mapping = aes(Security_region, Total_deceased_reported))
   cov_70_plot <- cov_70 + geom_bar(stat="identity", fill = "steelblue") + coord_flip()
   cov_70_plot
 ```
