@@ -74,7 +74,8 @@ cov_hosp_age_plot
 ### Performed tests with positive overlap
 ```{r}
   cov_pt_sub <- subset(cov_performed_tests, Security_region_name != "Onbekend")
-  cov_pt <- ggplot(data = cov_pt_sub, mapping = aes(Security_region_name, Tested_with_result))
+  cov_pt <- ggplot(cov_pt_sub, mapping = aes(Security_region_name, Tested_with_result))
+  
   cov_pt_plot <- cov_pt + geom_bar(stat="identity", fill = "steelblue") + coord_flip()
   cov_pt_plot
 ```
