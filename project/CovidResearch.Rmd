@@ -82,30 +82,31 @@ cov_hosp_age_plot
   Blue+red = Total tests per region
   Red = Total positives per region
 -->
-
+```{r}
 ggplot(cov_pt_sub, aes(x = Security_region_name, y = Tested_with_result)) +
   geom_col(aes(y = Tested_with_result), fill="steelblue") +
   geom_col(aes(y = Tested_positive), fill="red") + coord_flip() + geom_point(color="purple") + 
   geom_smooth(method="lm", color="green",  formula=y~x)
-  
+```
   <!-- Total amount of tests performed and positive tests per date of statistics from regions in The Netherlands (2020-06-01 - 2021-01-11)
     X = The date of statistics
     Y = Amount of resulted tests
     Green = Amount of resulted tests per date
     Purple = Total of positives per date
   -->
-  
+```{r}
 reg1 <- ggplot(cov_pt_sub, aes(x=Date_of_statistics, y=Tested_with_result)) + 
 geom_point(color="green")
 reg1 <- reg1 + geom_point(aes(y=Tested_positive), color="purple", alpha=.5) + geom_smooth(method="lm", color="red", formula=y~x)
 reg1
-
+```
 <!-- Positive results per date of statistics from regions in The Netherlands (2020-06-01 - 2021-01-11) -->
+```{r}
 reg2 <- lm(Tested_positive ~ Date_of_statistics, data = cov_pt_sub)
 plot(cov_pt_sub$Date_of_statistics, cov_pt_sub$Tested_positive, col="purple")
 summary(reg2)
 abline(reg2, col="red")
-
+```
 
 ### Performed tests per region with positive result overlap (from 2020-06-01 to 2022-01-11)
 ```{r}
