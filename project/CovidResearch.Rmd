@@ -26,8 +26,7 @@ cov_performed_tests <- read_csv2("../datasets/COVID-19_uitgevoerde_testen.csv")
 #Other info
 res_count_per_province_nl <- read_csv2("../datasets/Bevolkings_aantallen_per_provincie.csv")
 ```
-## Clean Data
-## Create Plots
+## General Research
 ### Covid IC Admissions
 ```{r}
 cov_ic <- ggplot(data = cov_ic_admissions, mapping = aes(x = Date_of_statistics, y = IC_admission)) 
@@ -60,7 +59,6 @@ cov_hosp_age_plot
   cov_pos_tests_per_province <- ggplot(data = cov_general_data_mod, aes(Date_of_report, Total_reported, color = Province))
   cov_pos_tests_per_province_plot <- cov_pos_tests_per_province + geom_col()
   cov_pos_tests_per_province_plot
-  #TODO combine friesland and fryslan numbers
 ```
 ### 2021 Resident Count Per Province 
 ```{r}
@@ -73,15 +71,13 @@ cov_hosp_age_plot
   cov_70_plot <- cov_70 + geom_bar(stat="identity", fill = "steelblue") + coord_flip()
   cov_70_plot
 ```
+## Regression Jamie
+## Regression Glen
 ### Performed tests with positive overlap
 ```{r}
   cov_pt_sub <- subset(cov_performed_tests, Security_region_name != "Onbekend")
-  cov_pt <- ggplot(cov_pt_sub, aes(Tested_with_result, Security_region_name, color = Security_region_name))
-  cov_pt <- ggplot(cov_pt_sub, aes(Tested_with_result, Security_region_name))
-  cov_pt <- ggplot(cov_pt_sub, aes(Tested_with_result, Security_region_name))
-  
-  cov_pt_plot <- cov_pt + geom_bar(stat="identity", fill="steelblue") # use for rest
-  cov_pt_plot <- cov_pt + geom_bar(stat = "identity") + coord_flip() # use for color per region
-  cov_pt_plot <- cov_pt + geom_bar(stat = "identity")
-  cov_pt_plot
+  cov_pt <- ggplot(cov_pt_sub, aes(Security_region_name))
+  cov_pt <- cov_pt + geom_bar(aes(y = Tested_with_result), stat="identity", fill="steelblue") + coord_flip()
+  cov_pt <- cov_pt + geom_bar(aes(y = Tested_positive), stat="identity", fill="red") + coord_flip()
+  cov_pt
 ```
