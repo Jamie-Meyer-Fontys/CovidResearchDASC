@@ -88,7 +88,7 @@ ggplot(cov_pt_sub, aes(x = Security_region_name, y = Tested_with_result)) +
   geom_col(aes(y = Tested_positive), fill="red") + coord_flip() + geom_point(color="purple") + 
   geom_smooth(method="lm", color="green",  formula=y~x)
   
-  <!-- total amount of tests performed and positive tests over the date of statistics in The Netherlands (2020-06-01 - 2021-01-11)
+  <!-- Total amount of tests performed and positive tests per date of statistics from regions in The Netherlands (2020-06-01 - 2021-01-11)
     X = The date of statistics
     Y = Amount of resulted tests
     Green = Amount of resulted tests per date
@@ -100,7 +100,7 @@ geom_point(color="green")
 reg1 <- reg1 + geom_point(aes(y=Tested_positive), color="purple", alpha=.5) + geom_smooth(method="lm", color="red", formula=y~x)
 reg1
 
-<!-- Positive results per date of statistics from each region -->
+<!-- Positive results per date of statistics from regions in The Netherlands (2020-06-01 - 2021-01-11) -->
 reg2 <- lm(Tested_positive ~ Date_of_statistics, data = cov_pt_sub)
 plot(cov_pt_sub$Date_of_statistics, cov_pt_sub$Tested_positive, col="purple")
 summary(reg2)
