@@ -26,33 +26,18 @@ cov_performed_tests <- read_csv2("../datasets/COVID-19_uitgevoerde_testen.csv")
 #Other info
 res_count_per_province_nl <- read_csv2("../datasets/Bevolkings_aantallen_per_provincie.csv")
 ```
-## General Research
-### Covid IC Admissions
-```{r}
-cov_ic <- ggplot(data = cov_ic_admissions, mapping = aes(x = Date_of_statistics, y = IC_admission)) 
-cov_ic_plot <- cov_ic + geom_col() + geom_smooth()
-cov_ic_plot
-```
+##    General Research
 
-### Covid Hosptial Admissions
+###   Covid IC and Hospital Admissions by Age
 ```{r}
-cov_hosp <- ggplot(data = cov_hospital_admissions, mapping = aes(x = Date_of_statistics, y = Hospital_admission))
-cov_hosp_plot <- cov_hosp + geom_col()
-cov_hosp_plot
-```
-### Covid IC Admissions by Age
-```{r}
-cov_ic_age <- ggplot(data = cov_admissions_ranked_by_age, mapping = aes(x = Age_group, y = IC_admission))
-cov_ic_age_plot <- cov_ic_age + geom_bar(stat="identity", fill = "steelblue")
+cov_ic_age_sub <- subset(cov_admissions_ranked_by_age, Age_group != "Unknown");
+cov_ic_age_plot <- ggplot(data = cov_ic_age_sub, mapping = aes(x = Age_group))
+cov_ic_age_plot <- cov_ic_age_plot + geom_bar(aes(y = Hospital_admission ), stat="identity", fill = "steelblue") +
+                  geom_bar(aes(y = IC_admission ), stat="identity", fill = "red") + coord_flip()
 cov_ic_age_plot
 ```
-### Covid Hospital Admissions by Age
-```{r}
-cov_hosp_age <- ggplot(data = cov_admissions_ranked_by_age, mapping = aes(x = Age_group, y = Hospital_admission))
-cov_hosp_age_plot <- cov_hosp_age + geom_bar(stat="identity", fill = "steelblue")
-cov_hosp_age_plot
-```
-### Total Positive Covid Test Reports Per Province Over Time
+
+###   Total Positive Covid Test Reports Per Province Over Time
 ```{r}
   cov_general_data_mod <- cov_general_data
   cov_general_data_mod$Province[which(cov_general_data_mod$Province == "Fryslân")] <- "Friesland"
@@ -60,24 +45,26 @@ cov_hosp_age_plot
   cov_pos_tests_per_province_plot <- cov_pos_tests_per_province + geom_col()
   cov_pos_tests_per_province_plot
 ```
-### 2021 Resident Count Per Province 
-```{r}
-  res_count_per_province_nl
-```
-### Age group at or above 70 total deceased reported
+
+###   Age group at or above 70 total deceased reported
 ```{r}
   cov_home70_sub <- subset(cov_home70, Security_region != "Onbekend")
   cov_70 <- ggplot(data = cov_home70_sub, mapping = aes(Security_region, Total_deceased_reported))
   cov_70_plot <- cov_70 + geom_bar(stat="identity", fill = "steelblue") + coord_flip()
   cov_70_plot
 ```
-## Regression Jamie
-## Regression Glen
-### Performed tests with positive overlap
+
+##    Regression Jamie
+
+###
+
+##    Regression Glenn
+
+###   Performed tests with positive overlap
 ```{r}
   cov_pt_sub <- subset(cov_performed_tests, Security_region_name != "Onbekend")
   cov_pt <- ggplot(cov_pt_sub, aes(Security_region_name))
-  cov_pt <- cov_pt + geom_bar(aes(y = Tested_with_result), stat="identity", fill="steelblue") + coord_flip()
-  cov_pt <- cov_pt + geom_bar(aes(y = Tested_positive), stat="identity", fill="red") + coord_flip()
+  cov_pt <- cov_pt + geom_bar(aes(y = Tested_with_result), stat="identity", fill="steelblue") +
+    geom_bar(aes(y = Tested_positive), stat="identity", fill="red") + coord_flip()
   cov_pt
 ```
