@@ -23,8 +23,6 @@ cov_ic_admissions <- read_csv2("../datasets/COVID-19_ic_opnames.csv")
 cov_admissions_ranked_by_age <- read_csv2("../datasets/COVID-19_ziekenhuis_ic_opnames_per_leeftijdsgroep.csv")
 cov_home70 <- read_csv2("../datasets/COVID-19_thuiswonend_70plus.csv")
 cov_performed_tests <- read_csv2("../datasets/COVID-19_uitgevoerde_testen.csv")
-#Other info
-res_count_per_province_nl <- read_csv2("../datasets/Bevolkings_aantallen_per_provincie.csv")
 ```
 ##    General Research
 
@@ -47,7 +45,9 @@ res_count_per_province_nl <- read_csv2("../datasets/Bevolkings_aantallen_per_pro
 
 ## Regression Jamie
 
-###   Covid IC and Hospital Admissions by Age
+### Covid IC and Hospital Admissions by Age
+<!-- I tried to make regressions of the Covid related hospital and intensive care submissions based on age-group in the Netherlands -->
+<!-- In this bar plot red represents IC admissions and blue represents Hospital admissions -->
 
 ```{r}
 
@@ -58,17 +58,48 @@ cov_ic_age_plot <- cov_ic_age_plot + geom_bar(aes(y = Hospital_admission ), stat
 cov_ic_age_plot
 
 ```
+<!-- You can see that towards the middle of the age range the regression model is more confident that if the person where to get covid they would go to the hospital -->
+```{r}
+
+cov_ic_age_reg <- lm(IC_admission ~ Age_group, data = cov_ic_age_sub)
+cov_hosp_age_reg <- lm(Hospital_admission ~ Age_group, data = cov_ic_age_sub)
+
+cov_hosp_age_reg_plot <- ggplot(cov_ic_age_sub, aes(Age_group, Hospital_admission)) +
+  geom_bar(stat="identity", fill = "steelblue") +
+  geom_smooth(method = "lm")
+
+cov_ic_age_reg_plot <- ggplot(cov_ic_age_sub, aes(Age_group, IC_admission)) +
+  geom_bar(stat="identity", fill = "steelblue") +
+  geom_smooth(method = "lm")
+
+cov_hosp_age_reg_plot
+cov_ic_age_reg_plot
+
+summary(cov_ic_age_reg)
+summary(cov_hosp_age_reg)
+
+```
 
 ## Regression Glenn
 
 <!-- I tried to make regressions of the total amount of tests performed in The Netherlands with the total amount of positives taken out from it -->
 
+### Performed tests per region with positive result overlap (from 2020-06-01 to 2022-01-11)
+
+```{r}
+  cov_pt_sub <- subset(cov_performed_tests, Security_region_name != "Onbekend")
+  cov_pt <- ggplot(cov_pt_sub, aes(Security_region_name)) + 
+  geom_bar(aes(y = Tested_with_result), stat="identity", fill="steelblue") + coord_flip() + 
+  geom_bar(aes(y = Tested_positive), stat="identity", fill="red") + coord_flip()
+  cov_pt
+```
 <!-- Bar plot that shows the total amount of Covid-19 tests performed in The Netherlands between 2020-06-01 and 2022-01-11 with an overlap showing the total amount of positive results per region 
   X = Amount of tests
   Y = Regions were tests have been performed
   Blue+red = Total tests per region
   Red = Total positives per region
 -->
+
 ```{r}
 ggplot(cov_pt_sub, aes(x = Security_region_name, y = Tested_with_result)) +
   geom_col(aes(y = Tested_with_result), fill="steelblue") +
@@ -93,13 +124,4 @@ reg2 <- lm(Tested_positive ~ Date_of_statistics, data = cov_pt_sub)
 plot(cov_pt_sub$Date_of_statistics, cov_pt_sub$Tested_positive, col="purple")
 summary(reg2)
 abline(reg2, col="red")
-```
-
-### Performed tests per region with positive result overlap (from 2020-06-01 to 2022-01-11)
-```{r}
-  cov_pt_sub <- subset(cov_performed_tests, Security_region_name != "Onbekend")
-  cov_pt <- ggplot(cov_pt_sub, aes(Security_region_name)) + 
-  geom_bar(aes(y = Tested_with_result), stat="identity", fill="steelblue") + coord_flip() + 
-  geom_bar(aes(y = Tested_positive), stat="identity", fill="red") + coord_flip()
-  cov_pt
 ```
