@@ -79,8 +79,8 @@ cov_hosp_age_plot
 <!-- Bar plot that shows the total amount of Covid-19 tests performed in The Netherlands between 2020-06-01 and 2022-01-11 with an overlap showing the total amount of positive results per region 
   X = Amount of tests
   Y = Regions were tests have been performed
-  Blue+red = Total tests from test locations per region
-  Red = Total positives from test locations per region
+  Blue+red = Total tests per region
+  Red = Total positives per region
 -->
 
 ggplot(cov_pt_sub, aes(x = Security_region_name, y = Tested_with_result)) +
