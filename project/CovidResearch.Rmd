@@ -74,16 +74,22 @@ cov_hosp_age_plot
 ## Regression Jamie
 ## Regression Glenn
 
-<!-- reg1 <- lm(Tested_positive ~ Tested_with_result, data = cov_performed_tests) -->
-<!-- summary(reg1) -->
+reg1 <- lm(Tested_positive ~ Tested_positive, data = cov_pt_sub)
+summary(reg1)
 
-<!-- plot(Tested_positive ~ Tested_with_result, data = cov_performed_tests) -->
-<!-- abline(reg1) -->
+plot(Tested_with_result ~ Tested_positive, data = cov_pt_sub, col="purple")
+abline(reg1, col="red")
+  
+  ggplot(cov_pt_sub, aes(x = Security_region_name, y = Tested_with_result)) +
+  geom_col(aes(y = Tested_with_result), fill="steelblue") +
+  geom_col(aes(y = Tested_positive), fill="red") + coord_flip() + geom_point(color="purple") + 
+  stat_smooth(method="lm", color="yellow",  formula=y~x)
 
-ggplot(cov_pt_sub, aes(x = Security_region_name, y = Tested_with_result)) + 
-  geom_bar(aes(y = Tested_with_result), fill="steelblue", stat="identity") + coord_flip() + 
-  geom_bar(aes(y = Tested_positive), fill="red", stat="identity") + geom_point() + 
-  stat_smooth(method = "lm") 
+  ggplot(cov_pt_sub, aes(x=Security_region_name, y=Tested_with_result)) + 
+  geom_col(aes(y = Tested_positive), fill="red") + geom_point() + geom_smooth(method="lm")
+  
+  ggplot(cov_pt_sub, aes(x=Tested_with_result, y=Tested_positive)) + 
+  geom_point(color="purple") + geom_smooth(method="lm", color="red")
 
 ### Performed tests per region with positive result overlap (from 2020-06-01 to 2022-01-11)
 ```{r}
