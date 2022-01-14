@@ -74,7 +74,7 @@ cov_hosp_age_plot
 ## Regression Jamie
 ## Regression Glenn
 
-<!-- I tried to make regressions of the total amount of tests performed in The Netherlands and total amount of positives taken out from it -->
+<!-- I tried to make regressions of the total amount of tests performed in The Netherlands with the total amount of positives taken out from it -->
 
 <!-- Bar plot that shows the total amount of Covid-19 tests performed in The Netherlands between 2020-06-01 and 2022-01-11 with an overlap showing the total amount of positive results per region 
   X = Amount of tests
@@ -88,7 +88,7 @@ ggplot(cov_pt_sub, aes(x = Security_region_name, y = Tested_with_result)) +
   geom_col(aes(y = Tested_positive), fill="red") + coord_flip() + geom_point(color="purple") + 
   geom_smooth(method="lm", color="green",  formula=y~x)
   
-  <!-- total amount of tests performed and positive tests over the date of statistics in The Netherlands
+  <!-- total amount of tests performed and positive tests over the date of statistics in The Netherlands (2020-06-01 - 2021-01-11)
     X = The date of statistics
     Y = Amount of resulted tests
     Green = Amount of resulted tests per date
