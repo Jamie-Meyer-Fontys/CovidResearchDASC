@@ -7,19 +7,19 @@ output:
 ## Install and load Libraries
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-#install.packages('plyr')
-#install.packages("readr")
-#install.packages("gglplot2")
+#install.packages('dplyr')
 library(readr)
+library(dplyr)
 library(ggplot2)
+library(lubridate)
 options(scipen=999)
 ```
 ## Import Data
 ```{r}
 #Covid-19 Info
 cov_general_data<- read_csv2("../datasets/COVID-19_aantallen_gemeente_cumulatief.csv")
+cov_general_data_daily<- read_csv2("../datasets/COVID-19_aantallen_gemeente_per_dag.csv")
 cov_ic_admissions <- read_csv2("../datasets/COVID-19_ic_opnames.csv")
-cov_hospital_admissions <- read_csv2("../datasets/COVID-19_ziekenhuisopnames.csv")
 cov_admissions_ranked_by_age <- read_csv2("../datasets/COVID-19_ziekenhuis_ic_opnames_per_leeftijdsgroep.csv")
 cov_home70 <- read_csv2("../datasets/COVID-19_thuiswonend_70plus.csv")
 cov_performed_tests <- read_csv2("../datasets/COVID-19_uitgevoerde_testen.csv")
@@ -27,15 +27,6 @@ cov_performed_tests <- read_csv2("../datasets/COVID-19_uitgevoerde_testen.csv")
 res_count_per_province_nl <- read_csv2("../datasets/Bevolkings_aantallen_per_provincie.csv")
 ```
 ##    General Research
-
-###   Covid IC and Hospital Admissions by Age
-```{r}
-cov_ic_age_sub <- subset(cov_admissions_ranked_by_age, Age_group != "Unknown");
-cov_ic_age_plot <- ggplot(data = cov_ic_age_sub, mapping = aes(x = Age_group))
-cov_ic_age_plot <- cov_ic_age_plot + geom_bar(aes(y = Hospital_admission ), stat="identity", fill = "steelblue") +
-                  geom_bar(aes(y = IC_admission ), stat="identity", fill = "red") + coord_flip()
-cov_ic_age_plot
-```
 
 ###   Total Positive Covid Test Reports Per Province Over Time
 ```{r}
@@ -53,7 +44,21 @@ cov_ic_age_plot
   cov_70_plot <- cov_70 + geom_bar(stat="identity", fill = "steelblue") + coord_flip()
   cov_70_plot
 ```
+
 ## Regression Jamie
+
+###   Covid IC and Hospital Admissions by Age
+
+```{r}
+
+cov_ic_age_sub <- subset(cov_admissions_ranked_by_age, Age_group != "Unknown");
+cov_ic_age_plot <- ggplot(data = cov_ic_age_sub, mapping = aes(x = Age_group))
+cov_ic_age_plot <- cov_ic_age_plot + geom_bar(aes(y = Hospital_admission ), stat="identity", fill = "steelblue") +
+                  geom_bar(aes(y = IC_admission ), stat="identity", fill = "red") + coord_flip()
+cov_ic_age_plot
+
+```
+
 ## Regression Glenn
 
 <!-- reg1 <- lm(Tested_positive ~ Tested_with_result, data = cov_performed_tests) -->
@@ -70,10 +75,6 @@ ggplot(cov_pt_sub, aes(x = Security_region_name, y = Tested_with_result)) +
 ### Performed tests per region with positive result overlap (from 2020-06-01 to 2022-01-11)
 ```{r}
   cov_pt_sub <- subset(cov_performed_tests, Security_region_name != "Onbekend")
-  cov_pt <- ggplot(cov_pt_sub, aes(Security_region_name))
-  cov_pt <- cov_pt + geom_bar(aes(y = Tested_with_result), stat="identity", fill="steelblue") +
-    geom_bar(aes(y = Tested_positive), stat="identity", fill="red") + coord_flip()
-  cov_pt
   cov_pt <- ggplot(cov_pt_sub, aes(Security_region_name)) + 
   geom_bar(aes(y = Tested_with_result), stat="identity", fill="steelblue") + coord_flip() + 
   geom_bar(aes(y = Tested_positive), stat="identity", fill="red") + coord_flip()
