@@ -100,6 +100,12 @@ geom_point(color="green")
 reg1 <- reg1 + geom_point(aes(y=Tested_positive), color="purple", alpha=.5) + geom_smooth(method="lm", color="red", formula=y~x)
 reg1
 
+reg2 <- lm(Tested_with_result ~ Tested_positive, data = cov_pt_sub)
+plot(cov_pt_sub$Tested_with_result, cov_pt_sub$Tested_positive, col="purple")
+summary(reg2)
+abline(reg2, col="blue")
+
+
 ### Performed tests per region with positive result overlap (from 2020-06-01 to 2022-01-11)
 ```{r}
   cov_pt_sub <- subset(cov_performed_tests, Security_region_name != "Onbekend")
