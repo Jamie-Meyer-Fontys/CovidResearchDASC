@@ -7,14 +7,14 @@ output:
 ## Install and load Libraries
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-#install.packages('plyr')
-#install.packages("readr")
-#install.packages("gglplot2")
+#install.packages('dplyr')
 library(readr)
+library(dplyr)
 library(ggplot2)
+library(lubridate)
 options(scipen=999)
 ```
-## We used the datasets 
+## We used the datasets
 ## Import Data
 ```{r}
 #Covid-19 Info
@@ -35,7 +35,7 @@ res_count_per_province_nl
 
 ## Let's explain the relevant variables and why/how we are going to use them
 ## TODO
-## 
+##
 
 ```{r}
 ## The first dataset (cov_general_data) has to be cleaned up, because it has missing values and only the latest report data needs to be filtered out.
@@ -64,13 +64,13 @@ res_count_per_province_nl
 
 ```{r}
 ## Rename 'Fryslân' to 'Friesland' in cov_hospital_data
-## TODO: Here rename 'Fryslân' to 'Friesland' 
+## TODO: Here rename 'Fryslân' to 'Friesland'
 
 ```
 
 ```{r}
 ## Combine security regions into their respective provinces to better fit the resident count data for later
-## TODO: Here combine 'Limburg', 'Gelderland', 'Friesland' 
+## TODO: Here combine 'Limburg', 'Gelderland', 'Friesland'
 ## TODO: Here combine 'Noord-Brabant', 'Utrecht', 'Zuid-Holland'
 ## TODO: Here combine 'Zeeland', 'Overijssel', 'Groningen'
 ## TODO: Here combine 'Noord-Holland', 'Flevoland', 'Drenthe'
