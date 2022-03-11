@@ -34,8 +34,9 @@ res_count_per_province_nl
 ```
 
 ## Let's explain the relevant variables and why/how we are going to use them
-## TODO
-##
+## TODO:
+## Glenn: cov_general_data cleaning
+## Jamie: cov_hosp_data cleaning
 
 ```{r}
 ## The first dataset (cov_general_data) has to be cleaned up, because it has missing values and only the latest report data needs to be filtered out.
