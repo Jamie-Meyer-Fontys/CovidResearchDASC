@@ -14,109 +14,77 @@ library(readr)
 library(ggplot2)
 options(scipen=999)
 ```
+## We used the datasets 
 ## Import Data
 ```{r}
 #Covid-19 Info
 cov_general_data<- read_csv2("../datasets/COVID-19_aantallen_gemeente_cumulatief.csv")
-cov_ic_admissions <- read_csv2("../datasets/COVID-19_ic_opnames.csv")
-cov_hospital_admissions <- read_csv2("../datasets/COVID-19_ziekenhuisopnames.csv")
-cov_admissions_ranked_by_age <- read_csv2("../datasets/COVID-19_ziekenhuis_ic_opnames_per_leeftijdsgroep.csv")
-cov_home70 <- read_csv2("../datasets/COVID-19_thuiswonend_70plus.csv")
-cov_performed_tests <- read_csv2("../datasets/COVID-19_uitgevoerde_testen.csv")
+cov_hospital_data <- read_csv2("../datasets/COVID-19_ziekenhuisopnames.csv")
 #Other info
 res_count_per_province_nl <- read_csv2("../datasets/Bevolkings_aantallen_per_provincie.csv")
 ```
-## General Research
-### Covid IC Admissions
+
+## Population per province compared to the positive tests, hospital admissions and deaths per province
+
 ```{r}
-cov_ic <- ggplot(data = cov_ic_admissions, mapping = aes(x = Date_of_statistics, y = IC_admission)) 
-cov_ic_plot <- cov_ic + geom_col() + geom_smooth()
-cov_ic_plot
+## lets first inspect the datasets
+cov_general_data
+cov_hospital_data
+res_count_per_province_nl
 ```
 
-### Covid Hosptial Admissions
-```{r}
-cov_hosp <- ggplot(data = cov_hospital_admissions, mapping = aes(x = Date_of_statistics, y = Hospital_admission))
-cov_hosp_plot <- cov_hosp + geom_col()
-cov_hosp_plot
-```
-### Covid IC Admissions by Age
-```{r}
-cov_ic_age <- ggplot(data = cov_admissions_ranked_by_age, mapping = aes(x = Age_group, y = IC_admission))
-cov_ic_age_plot <- cov_ic_age + geom_bar(stat="identity", fill = "steelblue")
-cov_ic_age_plot
-```
-### Covid Hospital Admissions by Age
-```{r}
-cov_hosp_age <- ggplot(data = cov_admissions_ranked_by_age, mapping = aes(x = Age_group, y = Hospital_admission))
-cov_hosp_age_plot <- cov_hosp_age + geom_bar(stat="identity", fill = "steelblue")
-cov_hosp_age_plot
-```
-### Total Positive Covid Test Reports Per Province Over Time
-```{r}
-  cov_general_data_mod <- cov_general_data
-  cov_general_data_mod$Province[which(cov_general_data_mod$Province == "Fryslân")] <- "Friesland"
-  cov_pos_tests_per_province <- ggplot(data = cov_general_data_mod, aes(Date_of_report, Total_reported, color = Province))
-  cov_pos_tests_per_province_plot <- cov_pos_tests_per_province + geom_col()
-  cov_pos_tests_per_province_plot
-```
-### 2021 Resident Count Per Province 
-```{r}
-  res_count_per_province_nl
-```
-### Age group at or above 70 total deceased reported
-```{r}
-  cov_home70_sub <- subset(cov_home70, Security_region != "Onbekend")
-  cov_70 <- ggplot(data = cov_home70_sub, mapping = aes(Security_region, Total_deceased_reported))
-  cov_70_plot <- cov_70 + geom_bar(stat="identity", fill = "steelblue") + coord_flip()
-  cov_70_plot
-```
-## Regression Jamie
-## Regression Glenn
+## Let's explain the relevant variables and why/how we are going to use them
+## TODO
+## 
 
-<!-- I tried to make regressions of the total amount of tests performed in The Netherlands with the total amount of positives taken out from it -->
+```{r}
+## The first dataset (cov_general_data) has to be cleaned up, because it has missing values and only the latest report data needs to be filtered out.
+## Let's first filter the data based on the latest publication we have
+## TODO: Here filter the cov_general_data by the date of 10th of March, 2022
 
-<!-- Bar plot that shows the total amount of Covid-19 tests performed in The Netherlands between 2020-06-01 and 2022-01-11 with an overlap showing the total amount of positive results per region 
-  X = Amount of tests
-  Y = Regions were tests have been performed
-  Blue+red = Total tests per region
-  Red = Total positives per region
--->
-```{r}
-ggplot(cov_pt_sub, aes(x = Security_region_name, y = Tested_with_result)) +
-  geom_col(aes(y = Tested_with_result), fill="steelblue") +
-  geom_col(aes(y = Tested_positive), fill="red") + coord_flip() + geom_point(color="purple") + 
-  geom_smooth(method="lm", color="green",  formula=y~x)
-```
-  <!-- Total amount of tests performed and positive tests per date of statistics from regions in The Netherlands (2020-06-01 - 2021-01-11)
-    X = The date of statistics
-    Y = Amount of resulted tests
-    Green = Amount of resulted tests per date
-    Purple = Total of positives per date
-  -->
-```{r}
-reg1 <- ggplot(cov_pt_sub, aes(x=Date_of_statistics, y=Tested_with_result)) + 
-geom_point(color="green")
-reg1 <- reg1 + geom_point(aes(y=Tested_positive), color="purple", alpha=.5) + geom_smooth(method="lm", color="red", formula=y~x)
-reg1
-```
-<!-- Positive results per date of statistics from regions in The Netherlands (2020-06-01 - 2021-01-11) -->
-```{r}
-reg2 <- lm(Tested_positive ~ Date_of_statistics, data = cov_pt_sub)
-plot(cov_pt_sub$Date_of_statistics, cov_pt_sub$Tested_positive, col="purple")
-summary(reg2)
-abline(reg2, col="red")
 ```
 
-### Performed tests per region with positive result overlap (from 2020-06-01 to 2022-01-11)
 ```{r}
-  cov_pt_sub <- subset(cov_performed_tests, Security_region_name != "Onbekend")
-  cov_pt <- ggplot(cov_pt_sub, aes(Security_region_name))
-  cov_pt <- cov_pt + geom_bar(aes(y = Tested_with_result), stat="identity", fill="steelblue") + coord_flip()
-  cov_pt <- cov_pt + geom_bar(aes(y = Tested_positive), stat="identity", fill="red") + coord_flip()
-  cov_pt
-  cov_pt <- ggplot(cov_pt_sub, aes(Security_region_name)) + 
-  geom_bar(aes(y = Tested_with_result), stat="identity", fill="steelblue") + coord_flip() + 
-  geom_bar(aes(y = Tested_positive), stat="identity", fill="red") + coord_flip()
-  cov_pt
+## Let's filter out the null values from cov_general_data
+## TODO: Here filter out the null values from the cov_general_data
+
+```
+
+```{r}
+## A double entry of province has been detected in the cov_general_data which needs to be combined
+## TODO: Here combine the values 'Friesland' and 'Fryslân'
+
+```
+
+```{r}
+## Remove variables that we are not going to use from cov_general_data
+## TODO: Here remove Municipality_name, Municipality_code from cov_general_data
+
+```
+
+```{r}
+## Rename 'Fryslân' to 'Friesland' in cov_hospital_data
+## TODO: Here rename 'Fryslân' to 'Friesland' 
+
+```
+
+```{r}
+## Combine security regions into their respective provinces to better fit the resident count data for later
+## TODO: Here combine 'Limburg', 'Gelderland', 'Friesland' 
+## TODO: Here combine 'Noord-Brabant', 'Utrecht', 'Zuid-Holland'
+## TODO: Here combine 'Zeeland', 'Overijssel', 'Groningen'
+## TODO: Here combine 'Noord-Holland', 'Flevoland', 'Drenthe'
+
+```
+
+```{r}
+## Filter null values out of the dataset cov_hospital_data
+## TODO: Here filter out the null values
+
+```
+
+```{r}
+## Remove variables that we are not going to use from cov_hospital_data
+## TODO: Here remove 'Municipality_code', 'Municipality_name', 'Security_region_code' from cov_hospital_data
+
 ```
