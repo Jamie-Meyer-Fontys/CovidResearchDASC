@@ -42,25 +42,37 @@ res_count_per_province_nl
 ## The first dataset (cov_general_data) has to be cleaned up, because it has missing values and only the latest report data needs to be filtered out.
 ## Let's first filter the data based on the latest publication we have
 ## TODO: Here filter the cov_general_data by the date of 10th of March, 2022
-
+## create a new variable named 'cov_general_data2' which represents the filtered dataset that shows the date of report of 10th of March, 2022
+cov_general_data$Date_of_report <- as.Date(cov_general_data$Date_of_report, format="%m/%d/%y")
+cov_general_data2 <- filter(cov_general_data, Date_of_report == "2022-3-10")
+cov_general_data2
 ```
 
 ```{r}
 ## Let's filter out the null values from cov_general_data
-## TODO: Here filter out the null values from the cov_general_data
+## TODO: Here filter out the null values from cov_general_data2
+## The only null values that have been found after the filtering are present in the last circa 20 rows for the columns Municipality_code/name and Province, now we need to remove them.
 
+cov_general_data2 <- filter(cov_general_data2,!is.na(Municipality_code))
+cov_general_data2 <- filter(cov_general_data2,!is.na(Municipality_name))
+cov_general_data2 <- filter(cov_general_data2,!is.na(Province))
+cov_general_data2
 ```
 
 ```{r}
 ## A double entry of province has been detected in the cov_general_data which needs to be combined
 ## TODO: Here combine the values 'Friesland' and 'Fryslân'
-
+cov_general_data2 <- filter(cov_general_data2, Province == "Friesland") ## returns 0 objects
+cov_general_data2 <- filter(cov_general_data2, Province == "Fryslân") ## returns 18 objects
+cov_general_data2
 ```
 
 ```{r}
 ## Remove variables that we are not going to use from cov_general_data
 ## TODO: Here remove Municipality_name, Municipality_code from cov_general_data
-
+cov_general_data2$Municipality_name <- NULL
+cov_general_data2$Municipality_code <- NULL
+cov_general_data2
 ```
 
 ```{r}
