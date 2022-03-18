@@ -14,12 +14,14 @@ library(ggplot2)
 library(lubridate)
 options(scipen=999)
 ```
+## LG 1 START
 ## We used the datasets
 ## Import Data
 ```{r}
 #Covid-19 Info
 cov_general_data<- read_csv2("../datasets/COVID-19_aantallen_gemeente_cumulatief.csv")
 cov_hospital_data <- read_csv2("../datasets/COVID-19_ziekenhuisopnames.csv")
+cov_performed_tests <- read_csv2("../datasets/COVID-19_uitgevoerde_testen.csv")
 #Other info
 res_count_per_province_nl <- read_csv2("../datasets/Bevolkings_aantallen_per_provincie.csv")
 ```
@@ -33,33 +35,30 @@ cov_hospital_data
 res_count_per_province_nl
 ```
 
-## Let's explain the relevant variables and why/how we are going to use them
-## TODO:
-## Glenn: cov_general_data cleaning
-## Jamie: cov_hosp_data cleaning
-
+## Let's explain the relevant variables and why/how we are going to use them: (TO NEXT MEET UP)
+## TODO: Uitleg geven van variables
+## Cleaning, mutating and filtering data (LG 1)
 ```{r}
 ## The first dataset (cov_general_data) has to be cleaned up, because it has missing values and only the latest report data needs to be filtered out.
 ## Let's first filter the data based on the latest publication we have
 ## TODO: Here filter the cov_general_data by the date of 10th of March, 2022
 ## create a new variable named 'cov_general_data_clean' which represents the filtered dataset that shows the date of report of 10th of March, 2022
-cov_general_data$Date_of_report <- as.Date(cov_general_data$Date_of_report, format="%m/%d/%y")
-cov_general_data_clean <- filter(cov_general_data, Date_of_report == "2022-3-10")
-cov_general_data_clean
+##cov_general_data$Date_of_report <- as.Date(cov_general_data$Date_of_report, format="%m/%d/%y")
+##cov_general_data_clean <- filter(cov_general_data, Date_of_report == "2022-3-10")
+##cov_general_data_clean
 ```
 
 ```{r}
 ## Let's filter out the null values from cov_general_data where the province is null since we cant use those in our research
 ## TODO: Here filter out the null values from cov_general_data_clean
-## TODO: new explaination
 
-cov_general_data_clean <- filter(cov_general_data_clean,!is.na(Province))
+cov_general_data_clean <- filter(cov_general_data,!is.na(Province))
 cov_general_data_clean
 ```
 
 ```{r}
-## A double entry of province has been detected in the cov_general_data_clean which needs to be combined
-## TODO: Here combine the values 'Friesland' and 'Fryslân'
+## Two names of provinces have been detected and we will use "Friesland" for the sake of consistency
+## TODO: Rename the value 'Fryslân' to 'Friesland'
 cov_general_data_clean <- cov_general_data_clean %>%
   mutate(Province = replace(Province, Province == "Fryslân", "Friesland"))
 cov_general_data_clean
@@ -128,3 +127,57 @@ cov_hospital_data_clean$Security_region_name <- NULL
 
 cov_hospital_data_clean
 ```
+
+## JAMIE
+```{r}
+## Remove the pv tag from province
+```
+
+```{r}
+## Filter the dataset "Performed tests" to only get the performed tests
+## TODO: Give only back performed tests
+```
+## Transforming and providing analysis on the data (LG 2)
+
+## GLENN
+```{r}
+## Total positive tests over time
+## TODO: Create ggplot showing positive tests over time AND change graph labels + explain
+```
+
+```{r}
+## Total hospital admissions over time
+## TODO: Create ggplot showing hospital admissions over time AND change graph labels + explain
+```
+
+```{r}
+## Total deceased over time
+## TODO: Create ggplot showing deceased over time AND change graph labels + explain
+```
+
+## JAMIE
+```{r}
+## Total performed tests over time
+## TODO: Create ggplot showing performed tests over time AND change graph labels + explain
+```
+
+```{r}
+## Total performed tests and positive tests over time
+## TODO: Create ggplot showing performed tests and positive tests over time AND change graph labels + explain
+```
+
+```{r}
+## Total performed tests compared to population per province
+## TODO: Create ggplot showing performed tests compared to pop over time AND change graph labels + explain
+```
+
+```{r}
+## Total performed tests and positive tests compared to population per province
+## TODO: Create ggplot showing performed tests and positive tests compared to pop over time AND change graph labels + explain
+```
+
+## Regression (LG 3)
+
+## Regression Jamie
+
+## Regression Glenn
