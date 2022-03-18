@@ -71,6 +71,7 @@ cov_general_data_clean
 cov_general_data_clean$Municipality_name <- NULL
 cov_general_data_clean$Municipality_code <- NULL
 cov_general_data_clean$Hospital_admission <- NULL
+
 cov_general_data_clean
 ```
 
@@ -80,12 +81,11 @@ cov_general_data_clean
 ## Making a new cleaned tibble called cov_hospital_data_clean
 cov_hospital_data_clean <- filter(cov_hospital_data, !is.na(Security_region_name))
 cov_hospital_data_clean 
-
 ```
 
 ```{r}
 ## Rename 'Fryslân' to 'Friesland' in cov_hospital_data
-## TODO: Here rename 'Fryslân' to 'Friesland'
+## TODO: Here rename 'Fryslân' to 'Friesland' for consistency sake.
 cov_hospital_data_clean <- cov_hospital_data_clean %>%
   mutate(Security_region_name = replace(Security_region_name, Security_region_name == "Fryslân", "Friesland"))
 cov_hospital_data_clean
@@ -95,13 +95,26 @@ cov_hospital_data_clean
 ```{r}
 ## Combine security regions into their respective provinces to a province variable to better fit the resident count data for later.
 ## Sorted based off this article wiki https://en.wikipedia.org/wiki/Safety_region
-
-## TODO: Add province variable
-cov_hospital_data_clean <- cov_hospital_data_clean %>% 
-  mutate(Province = Security_region_name)
 ## TODO: Create Sets categorizing the security regions into their respective provinces
-
+# only these provinces are fragmented the others are fine.
+overijssel_vr <- c("VR04","VR05")
+gelderland_vr <- c("VR06","VR07","VR08")
+north_holland_vr <- c("VR10","VR11","VR12","VR13","VR14")
+south_holland_vr <- c("VR15","VR16","VR17","VR18")
+north_brabant_vr <- c("VR20","VR21","VR22")
+limburg_vr <- c("VR23","VR24")
 ## TODO: Here combine security regions into their respective province
+cov_hospital_data_clean <- cov_hospital_data_clean %>%
+  mutate(Province = case_when(
+    Security_region_code %in% overijssel_vr ~ 'Overijssel',
+    Security_region_code %in% gelderland_vr ~ 'Gelderland',
+    Security_region_code %in% north_holland_vr ~ 'Noord-Holland',
+    Security_region_code %in% south_holland_vr ~ 'Zuid-Holland',
+    Security_region_code %in% north_brabant_vr ~ 'Noord-Brabant',
+    Security_region_code %in% limburg_vr ~ 'Limburg',
+    TRUE ~ Security_region_name))
+
+cov_hospital_data_clean
 ```
 
 
@@ -112,5 +125,6 @@ cov_hospital_data_clean$Municipality_name <- NULL
 cov_hospital_data_clean$Municipality_code <- NULL
 cov_hospital_data_clean$Security_region_code <- NULL
 cov_hospital_data_clean$Security_region_name <- NULL
+
 cov_hospital_data_clean
 ```
