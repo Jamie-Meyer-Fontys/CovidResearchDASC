@@ -14,8 +14,7 @@ library(ggplot2)
 library(lubridate)
 options(scipen=999)
 ```
-## LG 1 START
-## We used the datasets
+
 ## Import Data
 ```{r}
 #Covid-19 Info
