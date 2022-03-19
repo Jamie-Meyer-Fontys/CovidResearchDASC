@@ -16,6 +16,7 @@ options(scipen=999)
 ```
 
 ## Import Data
+
 ```{r}
 #Covid-19 Info
 cov_general_data<- read_csv2("../datasets/COVID-19_aantallen_gemeente_cumulatief.csv")
