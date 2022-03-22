@@ -143,16 +143,67 @@ cov_hospital_data_clean
 ```{r}
 ## Total positive tests over time
 ## TODO: Create ggplot showing positive tests over time AND change graph labels + explain
+cov_general_data_clean %>% ggplot(aes(x = Date_of_report, y = Total_reported)) + 
+  geom_line(color = "darkgreen") + 
+  labs(title = "Positive tests over time",
+       subtitle = "Date of report: gggg\nTotal positive tested: gggg\nfrom 2020-03-10 till 2022-03-10",
+       y = "Total positive tested",
+       x = "Date of report") + 
+  theme_fivethirtyeight() +
+  theme(axis.title = element_text())
+
+cov_general_data_clean %>% ggplot(aes(x = Province, y = Total_reported)) + 
+  geom_bar(stat = "identity", fill = "blue") + coord_flip() + 
+  labs(title = "Positive tests over time",
+       subtitle = "Province: gggg\nTotal positive tested: gggg\nfrom 2020-03-10 till 2022-03-10",
+       y = "Total positive tested",
+       x = "Province") + 
+  theme_fivethirtyeight() +
+  theme(axis.title = element_text())
 ```
 
 ```{r}
 ## Total hospital admissions over time
 ## TODO: Create ggplot showing hospital admissions over time AND change graph labels + explain
+cov_general_data_clean %>% ggplot(aes(x = Date_of_report, y = Hospital_admission)) + 
+  geom_line(color = "darkgreen") + 
+  labs(title = "Hospital admissions over time",
+       subtitle = "Date of report: gggg\nTotal admissions: gggg\nfrom 2020-03-10 till 2022-03-10",
+       y = "Total admissions",
+       x = "Date of report") + 
+  theme_fivethirtyeight() +
+  theme(axis.title = element_text())
+
+cov_general_data_clean %>% ggplot(aes(x = Province, y = Hospital_admission)) + 
+  geom_bar(stat = "identity", fill = "blue") + coord_flip() + 
+  labs(title = "Hospital admissions over time",
+       subtitle = "Province: gggg\nTotal admissions: gggg\nfrom 2020-03-10 till 2022-03-10",
+       y = "Total admissions",
+       x = "Province") + 
+  theme_fivethirtyeight() +
+  theme(axis.title = element_text())
 ```
 
 ```{r}
 ## Total deceased over time
 ## TODO: Create ggplot showing deceased over time AND change graph labels + explain
+cov_general_data_clean %>% ggplot(aes(x = Date_of_report, y = Deceased)) + 
+  geom_line(color = "darkgreen") + 
+  labs(title = "Total deceased over time",
+       subtitle = "Date of report: gggg\nDeceased: gggg\nfrom 2020-03-10 till 2022-03-10",
+       y = "Deceased",
+       x = "Date of report") + 
+  theme_fivethirtyeight() +
+  theme(axis.title = element_text())
+
+cov_general_data_clean %>% ggplot(aes(x = Province, y = Deceased)) + 
+  geom_bar(stat = "identity", fill = "blue") + coord_flip() + 
+  labs(title = "Total deceased over time",
+       subtitle = "Province: gggg\nTotal deceased: gggg\nfrom 2020-03-10 till 2022-03-10",
+       y = "Total deceased",
+       x = "Province") + 
+  theme_fivethirtyeight() +
+  theme(axis.title = element_text())
 ```
 
 ## JAMIE
