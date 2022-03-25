@@ -162,6 +162,7 @@ cov_performed_tests <- cov_performed_tests %>%
     Security_region_code %in% north_brabant_vr ~ 'Noord-Brabant',
     Security_region_code %in% limburg_vr ~ 'Limburg',
     TRUE ~ Security_region_name))
+
 cov_performed_tests
 ```
 
@@ -174,8 +175,20 @@ cov_performed_tests$Security_region_name <- NULL
 ```{r}
 ## calculate the cumulative sum of all preformed tests per date
 cov_performed_tests <- cov_performed_tests %>%
+  group_by(Date_of_statistics)
   mutate(Total_tested_with_result = cumsum(Tested_with_result))
 
+## aggergate the Total_tested_with_result to eventually get the total over time
+total_cov_tests_by_date <- aggregate(cov_performed_tests$Total_tested_with_result, list(cov_performed_tests$Date_of_statistics), max)
+total_cov_tests_by_date <- total_cov_tests_by_date
+
+## rename columms
+names(total_cov_tests_by_date)[1] <- "Date_of_report"
+names(total_cov_tests_by_date)[2] <- "Tests_done"
+
+total_cov_tests_by_date <- total_cov_tests_by_date %>%
+  mutate(Total_tests_over_time = cumsum(Tests_done))
+total_cov_tests_by_date
 ```
 
 ## Transforming and providing analysis on the data (LG 2)
@@ -251,12 +264,12 @@ cov_general_data_clean %>% ggplot(aes(x = Province, y = Deceased)) +
 ```{r}
 ## Total performed tests over time
 ## TODO: Create ggplot showing performed tests over time AND change graph labels + explain
-cov_performed_tests %>% ggplot(aes(x = Date_of_statistics, y = Total_tested_with_result)) + 
-  geom_point(color = "darkgreen") +
+total_cov_tests_by_date %>% ggplot(aes(x = Date_of_report, y = Total_tests_over_time)) + 
+  geom_col(color = "darkgreen") +
   labs(title = "Total performed tests over time",
        subtitle = "",
        y = "Total performed tests",
-       x = "Date of statistics") + 
+       x = "Date of Report") + 
   theme_fivethirtyeight() +
   theme(axis.title = element_text())
 ```
