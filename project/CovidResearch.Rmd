@@ -141,6 +141,14 @@ res_count_per_province_nl$Province = gsub('.{4}$', '', res_count_per_province_nl
 
 res_count_per_province_nl
 ```
+```{r}
+## Rename 'Fryslân' to 'Friesland' in cov_preformed_tests
+## TODO: Here rename 'Fryslân' to 'Friesland' for consistency sake.
+cov_performed_tests <- cov_performed_tests %>%
+  mutate(Security_region_name = replace(Security_region_name, Security_region_name == "Fryslân", "Friesland"))
+cov_performed_tests
+
+```
 
 ```{r}
 ## Filter the dataset "Performed tests" to also group security regions
@@ -154,13 +162,20 @@ cov_performed_tests <- cov_performed_tests %>%
     Security_region_code %in% north_brabant_vr ~ 'Noord-Brabant',
     Security_region_code %in% limburg_vr ~ 'Limburg',
     TRUE ~ Security_region_name))
-cov 
+cov_performed_tests
 ```
 
 ```{r}
 ## Remove unused variables from the "Performed tests" dataset
 cov_performed_tests$Security_region_code <- NULL
 cov_performed_tests$Security_region_name <- NULL
+```
+
+```{r}
+## calculate the cumulative sum of all preformed tests per date
+cov_performed_tests <- cov_performed_tests %>%
+  mutate(Total_tested_with_result = cumsum(Tested_with_result))
+
 ```
 
 ## Transforming and providing analysis on the data (LG 2)
@@ -234,13 +249,13 @@ cov_general_data_clean %>% ggplot(aes(x = Province, y = Deceased)) +
 
 ## JAMIE
 ```{r}
-## performed tests over time
+## Total performed tests over time
 ## TODO: Create ggplot showing performed tests over time AND change graph labels + explain
-cov_performed_tests %>% ggplot(aes(x = Date_of_statistics, y = Tested_with_result)) + 
-  geom_bar(color = "darkgreen") + 
-  labs(title = "Performed tests over time",
+cov_performed_tests %>% ggplot(aes(x = Date_of_statistics, y = Total_tested_with_result)) + 
+  geom_point(color = "darkgreen") +
+  labs(title = "Total performed tests over time",
        subtitle = "",
-       y = "Performed tests",
+       y = "Total performed tests",
        x = "Date of statistics") + 
   theme_fivethirtyeight() +
   theme(axis.title = element_text())
