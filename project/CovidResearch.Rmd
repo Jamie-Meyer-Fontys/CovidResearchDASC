@@ -200,7 +200,7 @@ total_cov_tests_by_date
 cov_general_data_clean %>% ggplot(aes(x = Date_of_report, y = Total_reported)) + 
   geom_line(color = "darkgreen") + 
   labs(title = "Positive tests over time",
-       subtitle = "Date of report: Nr of reports per day that were newly received by the RIVM,\n submitted from 10:01 a.m. yesterday to 10:00 a.m. today. \nThe publication date may differ from the date of the positive test result.\n\nTotal positive tested: The number of people reported to the GGD who tested positive\n for SARS-CoV-2 at the time of publication.\n\nFrom 2020-03-10 till 2022-03-10",
+       subtitle = "Date of report: Number of reports per day that were newly received by the RIVM,\n submitted from 10:01 a.m. yesterday to 10:00 a.m. today. \nThe publication date may differ from the date of the positive test result.\n\nTotal positive tested: The number of people reported to the GGD who tested positive\n for SARS-CoV-2 at the time of publication.\n\nFrom 2020-03-10 till 2022-03-10",
        y = "Total positive tested",
        x = "Date of report") + 
   theme_fivethirtyeight() +
@@ -222,7 +222,7 @@ cov_general_data_clean %>% ggplot(aes(x = Province, y = Total_reported)) +
 cov_hospital_data_clean %>% ggplot(aes(x = Date_of_statistics, y = Hospital_admission)) + 
   geom_line(color = "darkgreen") + 
   labs(title = "Hospital admissions over time",
-       subtitle = "Date of report: Nr of people reported to the GGD who tested positive for SARS-CoV-2 \nat the time of publication.\n\nTotal admissions: Nr of hospitalized COVID-19 patients reported by the GGD \nat the time of publication.\n\nFrom 2020-03-10 till 2022-03-10",
+       subtitle = "Date of report: Number of people reported to the GGD who tested positive for SARS-CoV-2 \nat the time of publication.\n\nTotal admissions: Number of hospitalized COVID-19 patients reported by the GGD \nat the time of publication.\n\nFrom 2020-03-10 till 2022-03-10",
        y = "Total admissions",
        x = "Date of report") + 
   theme_fivethirtyeight() +
@@ -231,7 +231,7 @@ cov_hospital_data_clean %>% ggplot(aes(x = Date_of_statistics, y = Hospital_admi
 cov_hospital_data_clean %>% ggplot(aes(x = Province, y = Hospital_admission)) + 
   geom_bar(stat = "identity", fill = "blue") + coord_flip() + 
   labs(title = "Hospital admissions over time",
-       subtitle = "Province: Name of the province.\n\nTotal admissions: Nr of Hospitalized COVID-19 patients reported by the GGD \nat the time of publication.\n\nFrom 2020-03-10 till 2022-03-10",
+       subtitle = "Province: Name of the province.\n\nTotal admissions: Number of Hospitalized COVID-19 patients reported by the GGD \nat the time of publication.\n\nFrom 2020-03-10 till 2022-03-10",
        y = "Total admissions",
        x = "Province") + 
   theme_fivethirtyeight() +
@@ -244,7 +244,7 @@ cov_hospital_data_clean %>% ggplot(aes(x = Province, y = Hospital_admission)) +
 cov_general_data_clean %>% ggplot(aes(x = Date_of_report, y = Deceased)) + 
   geom_line(color = "darkgreen") + 
   labs(title = "Total deceased over time",
-       subtitle = "Date of report: Nr of people reported to the GGD who tested positive for SARS-CoV-2 \nat the time of publication.\n\nDeceased: The number of deceased persons reported to the GGD who tested positive for \nSARS-CoV-2 at the time of publication. The actual number of deceased persons positive \nis higher than the number reported in surveillance \nbecause not all deceased persons are tested.\n\nFrom 2020-03-10 till 2022-03-10",
+       subtitle = "Date of report: Number of people reported to the GGD who tested positive for SARS-CoV-2 \nat the time of publication.\n\nDeceased: The number of deceased persons reported to the GGD who tested positive for \nSARS-CoV-2 at the time of publication. The actual number of deceased persons positive \nis higher than the number reported in surveillance \nbecause not all deceased persons are tested.\n\nFrom 2020-03-10 till 2022-03-10",
        y = "Deceased",
        x = "Date of report") + 
   theme_fivethirtyeight() +
@@ -253,7 +253,7 @@ cov_general_data_clean %>% ggplot(aes(x = Date_of_report, y = Deceased)) +
 cov_general_data_clean %>% ggplot(aes(x = Province, y = Deceased)) + 
   geom_bar(stat = "identity", fill = "blue") + coord_flip() + 
   labs(title = "Total deceased over time",
-       subtitle = "Province: Name of the province\n\nTotal deceased: Nr of deceased persons reported to the GGD who tested \npositive for SARS-CoV-2 at the time of publication. The actual number of \ndeceased persons positive is higher than the number reported in surveillance \nbecause not all deceased persons are tested.\n\nFrom 2020-03-10 till 2022-03-10",
+       subtitle = "Province: Name of the province\n\nTotal deceased: Number of deceased persons reported to the GGD who tested \npositive for SARS-CoV-2 at the time of publication. The actual number of \ndeceased persons positive is higher than the number reported in surveillance \nbecause not all deceased persons are tested.\n\nFrom 2020-03-10 till 2022-03-10",
        y = "Total deceased",
        x = "Province") + 
   theme_fivethirtyeight() +
@@ -294,3 +294,16 @@ total_cov_tests_by_date %>% ggplot(aes(x = Date_of_report, y = Total_tests_over_
 ## Regression Jamie
 
 ## Regression Glenn
+
+```{r}
+attach(cov_general_data_clean)
+reg1 <- lm(formula = Total_reported ~ Deceased, data=cov_general_data_clean)
+summary(reg1)
+plot(Deceased, Total_reported, main="Scatterplot")
+abline(reg1, col="red")
+
+reg1 <- lm(formula = Deceased ~ Total_reported, data=cov_general_data_clean)
+summary(reg1)
+plot(Total_reported, Deceased, main="Scatterplot")
+abline(reg1, col="red")
+```
