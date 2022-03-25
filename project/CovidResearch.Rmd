@@ -191,19 +191,19 @@ cov_general_data_clean %>% ggplot(aes(x = Province, y = Total_reported)) +
 ```{r}
 ## Total hospital admissions over time
 ## TODO: Create ggplot showing hospital admissions over time AND change graph labels + explain
-cov_general_data_clean %>% ggplot(aes(x = Date_of_report, y = Hospital_admission)) + 
+cov_hospital_data_clean %>% ggplot(aes(x = Date_of_statistics, y = Hospital_admission)) + 
   geom_line(color = "darkgreen") + 
   labs(title = "Hospital admissions over time",
-       subtitle = "Date of report: Nr of people reported to the GGD who tested positive for SARS-CoV-2 \nat the time of publication.\n\nTotal admissions: Nr of hospitalized COVID-19 patients reported by the GGD \nat the time of publication. The actual number of patients is higher than the number of \nhospitalized patients reported in surveillance, because the GGD is not always aware of \nhospitalization if it occurs after notification. \nGiven this underreporting, as of January 18th, 2022, \nthe variable 'hospital_admission' is no longer updated, but set to value 9999.\n\nFrom 2020-03-10 till 2022-03-10",
+       subtitle = "Date of report: Nr of people reported to the GGD who tested positive for SARS-CoV-2 \nat the time of publication.\n\nTotal admissions: Nr of hospitalized COVID-19 patients reported by the GGD \nat the time of publication.\n\nFrom 2020-03-10 till 2022-03-10",
        y = "Total admissions",
        x = "Date of report") + 
   theme_fivethirtyeight() +
   theme(axis.title = element_text())
 
-cov_general_data_clean %>% ggplot(aes(x = Province, y = Hospital_admission)) + 
+cov_hospital_data_clean %>% ggplot(aes(x = Province, y = Hospital_admission)) + 
   geom_bar(stat = "identity", fill = "blue") + coord_flip() + 
   labs(title = "Hospital admissions over time",
-       subtitle = "Province: Name of the province.\n\nTotal admissions: Nr of Hospitalized COVID-19 patients reported by the GGD \nat the time of publication. The actual number of patients is higher than the \nnumber of hospitalized patients reported in surveillance, because the GGD is not \nalways aware of hospitalization if it occurs after notification. \nGiven this underreporting, as of January 18th, 2022, \nthe variable 'hospital_admission' is no longer updated, but set to value 9999.\n\nFrom 2020-03-10 till 2022-03-10",
+       subtitle = "Province: Name of the province.\n\nTotal admissions: Nr of Hospitalized COVID-19 patients reported by the GGD \nat the time of publication.\n\nFrom 2020-03-10 till 2022-03-10",
        y = "Total admissions",
        x = "Province") + 
   theme_fivethirtyeight() +
