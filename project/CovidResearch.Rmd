@@ -132,12 +132,37 @@ cov_hospital_data_clean
 ## JAMIE
 ```{r}
 ## Remove the pv tag from province
+## fist rename the names to English
+names(res_count_per_province_nl)[1] <- "Province"
+names(res_count_per_province_nl)[2] <- "Period"
+names(res_count_per_province_nl)[3] <- "Amount"
+## Remove the (PV) tag from province
+res_count_per_province_nl$Province = gsub('.{4}$', '', res_count_per_province_nl$Province)
+
+res_count_per_province_nl
 ```
 
 ```{r}
-## Filter the dataset "Performed tests" to only get the performed tests
-## TODO: Give only back performed tests
+## Filter the dataset "Performed tests" to also group security regions
+## TODO: Filter the dataset "Performed tests" to also group security regions
+cov_performed_tests <- cov_performed_tests %>%
+  mutate(Province = case_when(
+    Security_region_code %in% overijssel_vr ~ 'Overijssel',
+    Security_region_code %in% gelderland_vr ~ 'Gelderland',
+    Security_region_code %in% north_holland_vr ~ 'Noord-Holland',
+    Security_region_code %in% south_holland_vr ~ 'Zuid-Holland',
+    Security_region_code %in% north_brabant_vr ~ 'Noord-Brabant',
+    Security_region_code %in% limburg_vr ~ 'Limburg',
+    TRUE ~ Security_region_name))
+cov 
 ```
+
+```{r}
+## Remove unused variables from the "Performed tests" dataset
+cov_performed_tests$Security_region_code <- NULL
+cov_performed_tests$Security_region_name <- NULL
+```
+
 ## Transforming and providing analysis on the data (LG 2)
 
 ## GLENN
@@ -209,8 +234,16 @@ cov_general_data_clean %>% ggplot(aes(x = Province, y = Deceased)) +
 
 ## JAMIE
 ```{r}
-## Total performed tests over time
+## performed tests over time
 ## TODO: Create ggplot showing performed tests over time AND change graph labels + explain
+cov_performed_tests %>% ggplot(aes(x = Date_of_statistics, y = Tested_with_result)) + 
+  geom_bar(color = "darkgreen") + 
+  labs(title = "Performed tests over time",
+       subtitle = "",
+       y = "Performed tests",
+       x = "Date of statistics") + 
+  theme_fivethirtyeight() +
+  theme(axis.title = element_text())
 ```
 
 ```{r}
