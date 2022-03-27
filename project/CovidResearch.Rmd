@@ -44,9 +44,9 @@ res_count_per_province_nl
 ## Let's first filter the data based on the latest publication we have
 ## TODO: Here filter the cov_general_data by the date of 10th of March, 2022
 ## create a new variable named 'cov_general_data_clean' which represents the filtered dataset that shows the date of report of 10th of March, 2022
-##cov_general_data$Date_of_report <- as.Date(cov_general_data$Date_of_report, format="%m/%d/%y")
-##cov_general_data_clean <- filter(cov_general_data, Date_of_report == "2022-3-10")
-##cov_general_data_clean
+# cov_general_data$Date_of_report <- as.Date(cov_general_data$Date_of_report, format="%m/%d/%y")
+# cov_general_data_clean <- filter(cov_general_data, Date_of_report == "2022-3-10")
+# cov_general_data_clean
 ```
 
 ```{r}
@@ -296,14 +296,61 @@ total_cov_tests_by_date %>% ggplot(aes(x = Date_of_report, y = Total_tests_over_
 ## Regression Glenn
 
 ```{r}
-attach(cov_general_data_clean)
-reg1 <- lm(formula = Total_reported ~ Deceased, data=cov_general_data_clean)
-summary(reg1)
-plot(Deceased, Total_reported, main="Scatterplot")
-abline(reg1, col="red")
+# attach(cov_general_data_clean)
+##reg1 <- lm(formula = Total_reported ~ Deceased + I(Deceased^2), data=cov_general_data_clean)
+# reg1 <- lm(formula = Total_reported ~ Deceased, data=cov_general_data_clean)
+# 
+# summary(reg1)
+# plot(Deceased, Total_reported, main="Scatterplot")
+# abline(reg1, col="red")
+# ##cor(Deceased, I(Deceased^2))
+# cor(Deceased, Total_reported)
+# 
+# reg1 <- lm(formula = Deceased ~ Total_reported, data=cov_general_data_clean)
+# summary(reg1)
+# plot(Total_reported, Deceased, main="Scatterplot")
+# abline(reg1, col="red")
+# cor(Total_reported, Deceased)
 
-reg1 <- lm(formula = Deceased ~ Total_reported, data=cov_general_data_clean)
-summary(reg1)
-plot(Total_reported, Deceased, main="Scatterplot")
-abline(reg1, col="red")
+# x <- c(cov_general_data_clean$Total_reported)
+# y <- c(cov_general_data_clean$Deceased)
+# # relation <- lm(x~y)
+# 
+# plot(x,y,col = "blue",main = "Deceased over total reports",
+# abline(lm(y~x)),cex = 1.3,pch = 16,xlab = "Total reports",ylab = "Deceased")
+# 
+# plot(y,x,col = "blue",main = "Deceased over total reports",
+# abline(lm(x~y)),cex = 1.3,pch = 16,xlab = "Deceased",ylab = "Total reports")
+
+# a <- data.frame(x)
+# result <- predict(relation,a)
+
+# print(summary(relation))
+# print(result)
+
+# plot(Deceased, Total_reported)
+# plot(Total_reported, Deceased)
+
+# eerste regression
+cov_general_data_clean_reg <- cov_general_data_clean %>% group_by(month=floor_date(Date_of_report, "month")) %>%
+   summarize(Deceased=sum(Deceased))
+
+x <- c(cov_general_data_clean_reg$month)
+y <- c(cov_general_data_clean_reg$Deceased)
+relation <- lm(x~y)
+
+plot(x,y,col = "blue",main = "Deceased per month (2020-3-13 | 2022-3-13)",
+abline(lm(y~x)),cex = 1.3,pch = 16,xlab = "Month",ylab = "Deceased")
+
+# tweede regression
+cov_general_data_clean_reg <- cov_general_data_clean %>% group_by(month=floor_date(Date_of_report, "month")) %>%
+   summarize(Total_reported=sum(Total_reported))
+
+x <- c(cov_general_data_clean_reg$month)
+y <- c(cov_general_data_clean_reg$Total_reported)
+relation <- lm(x~y)
+
+plot(x,y,col = "blue",main = "Total positive reports per month (2020-3-13 | 2022-3-13)",
+abline(lm(y~x)),cex = 1.3,pch = 16,xlab = "Month",ylab = "Total positive reports")
+
 ```
