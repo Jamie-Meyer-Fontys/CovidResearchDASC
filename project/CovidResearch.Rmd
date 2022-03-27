@@ -146,8 +146,8 @@ res_count_per_province_nl
 ## TODO: Here rename 'Fryslân' to 'Friesland' for consistency sake.
 cov_performed_tests <- cov_performed_tests %>%
   mutate(Security_region_name = replace(Security_region_name, Security_region_name == "Fryslân", "Friesland"))
-cov_performed_tests
 
+cov_performed_tests
 ```
 
 ```{r}
@@ -173,33 +173,64 @@ cov_performed_tests$Security_region_name <- NULL
 ```
 
 ```{r}
-## calculate the cumulative sum of all preformed tests per date
+## calculate the cumulative sum of all preformed tests and positive tests per date
 cov_performed_tests <- cov_performed_tests %>%
-  group_by(Date_of_statistics)
-  mutate(Total_tested_with_result = cumsum(Tested_with_result))
+  group_by(Date_of_statistics) %>%
+  mutate(Total_tested_with_result = cumsum(Tested_with_result)) %>%
+  mutate(Total_tested_positive = cumsum(Tested_positive))
 
-## aggergate the Total_tested_with_result to eventually get the total over time
+cov_performed_tests
+```
+
+```{r}
+## aggergate the Total_tested_with_result and Total_tested_positive to eventually get the total over time
 total_cov_tests_by_date <- aggregate(cov_performed_tests$Total_tested_with_result, list(cov_performed_tests$Date_of_statistics), max)
-total_cov_tests_by_date <- total_cov_tests_by_date
+total_cov_tests_by_date
 
+total_pos_cov_tests_by_date <- aggregate(cov_performed_tests$Total_tested_positive, list(cov_performed_tests$Date_of_statistics), max)
+total_pos_cov_tests_by_date
+```
+
+```{r}
 ## rename columms
 names(total_cov_tests_by_date)[1] <- "Date_of_report"
 names(total_cov_tests_by_date)[2] <- "Tests_done"
+names(total_pos_cov_tests_by_date)[1] <- "Date_of_report"
+names(total_pos_cov_tests_by_date)[2] <- "Positive_tests"
 
+total_cov_tests_by_date
+total_pos_cov_tests_by_date
+```
+
+```{r}
+## combine the results one last time in seperate tables
 total_cov_tests_by_date <- total_cov_tests_by_date %>%
   mutate(Total_tests_over_time = cumsum(Tests_done))
+
 total_cov_tests_by_date
+
+total_pos_cov_tests_by_date <- total_pos_cov_tests_by_date %>%
+  mutate(Total_positive_tests_over_time = cumsum(Positive_tests))
+
+total_pos_cov_tests_by_date
+```
+
+```{r}
+##combine to one table by date
+total_test_results_by_date <- merge(total_cov_tests_by_date, total_pos_cov_tests_by_date)
+
+total_test_results_by_date
 ```
 
 ## Transforming and providing analysis on the data (LG 2)
 
 ## GLENN
 ```{r}
-## Total positive tests over time
+## Positive tests over time
 ## TODO: Create ggplot showing positive tests over time AND change graph labels + explain
 cov_general_data_clean %>% ggplot(aes(x = Date_of_report, y = Total_reported)) + 
   geom_line(color = "darkgreen") + 
-  labs(title = "Positive tests over time",
+  labs(title = "Total Positive tests over time",
        subtitle = "Date of report: Number of reports per day that were newly received by the RIVM,\n submitted from 10:01 a.m. yesterday to 10:00 a.m. today. \nThe publication date may differ from the date of the positive test result.\n\nTotal positive tested: The number of people reported to the GGD who tested positive\n for SARS-CoV-2 at the time of publication.\n\nFrom 2020-03-10 till 2022-03-10",
        y = "Total positive tested",
        x = "Date of report") + 
@@ -208,7 +239,7 @@ cov_general_data_clean %>% ggplot(aes(x = Date_of_report, y = Total_reported)) +
 
 cov_general_data_clean %>% ggplot(aes(x = Province, y = Total_reported)) + 
   geom_bar(stat = "identity", fill = "blue") + coord_flip() + 
-  labs(title = "Positive tests over time",
+  labs(title = "Total Positive tests over time",
        subtitle = "Province: Name of the province\n\nTotal positive tested: The number of people reported to the GGD \nwho tested positive for SARS-CoV-2 at the time of publication.\n\nFrom 2020-03-10 till 2022-03-10",
        y = "Total positive tested",
        x = "Province") + 
@@ -217,7 +248,7 @@ cov_general_data_clean %>% ggplot(aes(x = Province, y = Total_reported)) +
 ```
 
 ```{r}
-## Total hospital admissions over time
+## Hospital admissions over time
 ## TODO: Create ggplot showing hospital admissions over time AND change graph labels + explain
 cov_hospital_data_clean %>% ggplot(aes(x = Date_of_statistics, y = Hospital_admission)) + 
   geom_line(color = "darkgreen") + 
@@ -239,11 +270,12 @@ cov_hospital_data_clean %>% ggplot(aes(x = Province, y = Hospital_admission)) +
 ```
 
 ```{r}
-## Total deceased over time
+## IDK WHY BUT THESE NUMBERS LOOK WIERD SO MANY DEAD?
+## Deceased over time
 ## TODO: Create ggplot showing deceased over time AND change graph labels + explain
 cov_general_data_clean %>% ggplot(aes(x = Date_of_report, y = Deceased)) + 
   geom_line(color = "darkgreen") + 
-  labs(title = "Total deceased over time",
+  labs(title = "Deceased over time",
        subtitle = "Date of report: Number of people reported to the GGD who tested positive for SARS-CoV-2 \nat the time of publication.\n\nDeceased: The number of deceased persons reported to the GGD who tested positive for \nSARS-CoV-2 at the time of publication. The actual number of deceased persons positive \nis higher than the number reported in surveillance \nbecause not all deceased persons are tested.\n\nFrom 2020-03-10 till 2022-03-10",
        y = "Deceased",
        x = "Date of report") + 
@@ -252,9 +284,9 @@ cov_general_data_clean %>% ggplot(aes(x = Date_of_report, y = Deceased)) +
 
 cov_general_data_clean %>% ggplot(aes(x = Province, y = Deceased)) + 
   geom_bar(stat = "identity", fill = "blue") + coord_flip() + 
-  labs(title = "Total deceased over time",
+  labs(title = "Deceased over time",
        subtitle = "Province: Name of the province\n\nTotal deceased: Number of deceased persons reported to the GGD who tested \npositive for SARS-CoV-2 at the time of publication. The actual number of \ndeceased persons positive is higher than the number reported in surveillance \nbecause not all deceased persons are tested.\n\nFrom 2020-03-10 till 2022-03-10",
-       y = "Total deceased",
+       y = "Deceased",
        x = "Province") + 
   theme_fivethirtyeight() +
   theme(axis.title = element_text())
@@ -265,9 +297,9 @@ cov_general_data_clean %>% ggplot(aes(x = Province, y = Deceased)) +
 ## Total performed tests over time
 ## TODO: Create ggplot showing performed tests over time AND change graph labels + explain
 total_cov_tests_by_date %>% ggplot(aes(x = Date_of_report, y = Total_tests_over_time)) + 
-  geom_col(color = "darkgreen") +
+  geom_col(color = "steelblue") +
   labs(title = "Total performed tests over time",
-       subtitle = "",
+       subtitle = "The sum of all the reported Covid-19 tests done in the Netherlands over time",
        y = "Total performed tests",
        x = "Date of Report") + 
   theme_fivethirtyeight() +
@@ -277,11 +309,21 @@ total_cov_tests_by_date %>% ggplot(aes(x = Date_of_report, y = Total_tests_over_
 ```{r}
 ## Total performed tests and positive tests over time
 ## TODO: Create ggplot showing performed tests and positive tests over time AND change graph labels + explain
+total_test_results_by_date %>% ggplot(aes(x = Date_of_report)) + 
+  geom_col(aes(y = Total_tests_over_time), color= "steelblue") +
+  geom_col(aes(y = Total_positive_tests_over_time), color= "firebrick1") +
+  labs(title = "Total performed tests and positive tests over time",
+       subtitle = "Cumulative performed and positive tests in the Netherlands over time\n\nRed: Positive tests\nBlue: Performed tests",
+       x = "Date of Report",
+       y = "Tests") + 
+  theme_fivethirtyeight() +
+  theme(axis.title = element_text())
 ```
 
 ```{r}
 ## Total performed tests compared to population per province
 ## TODO: Create ggplot showing performed tests compared to pop over time AND change graph labels + explain
+
 ```
 
 ```{r}
