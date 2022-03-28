@@ -40,16 +40,6 @@ res_count_per_province_nl
 ## TODO: Uitleg geven van variables
 ## Cleaning, mutating and filtering data (LG 1)
 ```{r}
-## The first dataset (cov_general_data) has to be cleaned up, because it has missing values and only the latest report data needs to be filtered out.
-## Let's first filter the data based on the latest publication we have
-## TODO: Here filter the cov_general_data by the date of 10th of March, 2022
-## create a new variable named 'cov_general_data_clean' which represents the filtered dataset that shows the date of report of 10th of March, 2022
-# cov_general_data$Date_of_report <- as.Date(cov_general_data$Date_of_report, format="%m/%d/%y")
-# cov_general_data_clean <- filter(cov_general_data, Date_of_report == "2022-3-10")
-# cov_general_data_clean
-```
-
-```{r}
 ## Let's filter out the null values from cov_general_data where the province is null since we cant use those in our research
 ## TODO: Here filter out the null values from cov_general_data_clean
 
@@ -374,6 +364,8 @@ total_test_results_by_date %>% ggplot(aes(x = Date_of_report)) +
 # plot(Total_reported, Deceased)
 
 # eerste regression
+# verschil tussen vorige en nieuwe doden
+# 
 cov_general_data_clean_reg <- cov_general_data_clean %>% group_by(month=floor_date(Date_of_report, "month")) %>%
    summarize(Deceased=sum(Deceased))
 
