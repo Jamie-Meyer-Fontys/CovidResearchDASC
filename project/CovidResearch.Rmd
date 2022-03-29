@@ -31,9 +31,9 @@ res_count_per_province_nl <- read_csv2("../datasets/Bevolkings_aantallen_per_pro
 
 ```{r}
 ## lets first inspect the datasets
-cov_general_data
-cov_hospital_data
-res_count_per_province_nl
+head(cov_general_data)
+head(cov_hospital_data)
+head(res_count_per_province_nl)
 ```
 
 ## Let's explain the relevant variables and why/how we are going to use them: (TO NEXT MEET UP)
@@ -44,7 +44,7 @@ res_count_per_province_nl
 ## TODO: Here filter out the null values from cov_general_data_clean
 
 cov_general_data_clean <- filter(cov_general_data,!is.na(Province))
-cov_general_data_clean
+head(cov_general_data_clean)
 ```
 
 ```{r}
@@ -52,7 +52,7 @@ cov_general_data_clean
 ## TODO: Rename the value 'Fryslân' to 'Friesland'
 cov_general_data_clean <- cov_general_data_clean %>%
   mutate(Province = replace(Province, Province == "Fryslân", "Friesland"))
-cov_general_data_clean
+head(cov_general_data_clean)
 ```
 
 ```{r}
@@ -66,7 +66,7 @@ cov_general_data_clean$ROAZ_region <- NULL
 cov_general_data_clean$Municipality_code <- NULL
 cov_general_data_clean$Municipality_name <- NULL
 
-cov_general_data_clean
+head(cov_general_data_clean)
 ```
 
 ```{r}
@@ -74,7 +74,7 @@ cov_general_data_clean
 ## TODO: Here filter out the rows where the is Security_region_name not available
 ## Making a new cleaned tibble called cov_hospital_data_clean
 cov_hospital_data_clean <- filter(cov_hospital_data, !is.na(Security_region_name))
-cov_hospital_data_clean 
+head(cov_hospital_data_clean) 
 ```
 
 ```{r}
@@ -82,7 +82,7 @@ cov_hospital_data_clean
 ## TODO: Here rename 'Fryslân' to 'Friesland' for consistency sake.
 cov_hospital_data_clean <- cov_hospital_data_clean %>%
   mutate(Security_region_name = replace(Security_region_name, Security_region_name == "Fryslân", "Friesland"))
-cov_hospital_data_clean
+head(cov_hospital_data_clean)
 
 ```
 
@@ -108,7 +108,7 @@ cov_hospital_data_clean <- cov_hospital_data_clean %>%
     Security_region_code %in% limburg_vr ~ 'Limburg',
     TRUE ~ Security_region_name))
 
-cov_hospital_data_clean
+head(cov_hospital_data_clean)
 ```
 
 
@@ -120,10 +120,9 @@ cov_hospital_data_clean$Municipality_code <- NULL
 cov_hospital_data_clean$Security_region_code <- NULL
 cov_hospital_data_clean$Security_region_name <- NULL
 
-cov_hospital_data_clean
+head(cov_hospital_data_clean)
 ```
 
-## JAMIE
 ```{r}
 ## Remove the pv tag from province
 ## fist rename the names to English
@@ -133,7 +132,7 @@ names(res_count_per_province_nl)[3] <- "Amount"
 ## Remove the (PV) tag from province
 res_count_per_province_nl$Province = gsub('.{4}$', '', res_count_per_province_nl$Province)
 
-res_count_per_province_nl
+head(res_count_per_province_nl)
 ```
 ```{r}
 ## Rename 'Fryslân' to 'Friesland' in cov_preformed_tests
@@ -141,7 +140,7 @@ res_count_per_province_nl
 cov_performed_tests <- cov_performed_tests %>%
   mutate(Security_region_name = replace(Security_region_name, Security_region_name == "Fryslân", "Friesland"))
 
-cov_performed_tests
+head(cov_performed_tests)
 ```
 
 ```{r}
@@ -157,7 +156,7 @@ cov_performed_tests <- cov_performed_tests %>%
     Security_region_code %in% limburg_vr ~ 'Limburg',
     TRUE ~ Security_region_name))
 
-cov_performed_tests
+head(cov_performed_tests)
 ```
 
 ```{r}
@@ -173,16 +172,16 @@ cov_performed_tests <- cov_performed_tests %>%
   mutate(Total_tested_with_result = cumsum(Tested_with_result)) %>%
   mutate(Total_tested_positive = cumsum(Tested_positive))
 
-cov_performed_tests
+head(cov_performed_tests)
 ```
 
 ```{r}
 ## aggergate the Total_tested_with_result and Total_tested_positive to eventually get the total over time
 total_cov_tests_by_date <- aggregate(cov_performed_tests$Total_tested_with_result, list(cov_performed_tests$Date_of_statistics), max)
-total_cov_tests_by_date
+head(total_cov_tests_by_date)
 
 total_pos_cov_tests_by_date <- aggregate(cov_performed_tests$Total_tested_positive, list(cov_performed_tests$Date_of_statistics), max)
-total_pos_cov_tests_by_date
+head(total_pos_cov_tests_by_date)
 ```
 
 ```{r}
@@ -192,8 +191,8 @@ names(total_cov_tests_by_date)[2] <- "Tests_done"
 names(total_pos_cov_tests_by_date)[1] <- "Date_of_report"
 names(total_pos_cov_tests_by_date)[2] <- "Positive_tests"
 
-total_cov_tests_by_date
-total_pos_cov_tests_by_date
+head(total_cov_tests_by_date)
+head(total_pos_cov_tests_by_date)
 ```
 
 ```{r}
@@ -201,24 +200,23 @@ total_pos_cov_tests_by_date
 total_cov_tests_by_date <- total_cov_tests_by_date %>%
   mutate(Total_tests_over_time = cumsum(Tests_done))
 
-total_cov_tests_by_date
+head(total_cov_tests_by_date)
 
 total_pos_cov_tests_by_date <- total_pos_cov_tests_by_date %>%
   mutate(Total_positive_tests_over_time = cumsum(Positive_tests))
 
-total_pos_cov_tests_by_date
+head(total_pos_cov_tests_by_date)
 ```
 
 ```{r}
 ##combine to one table by date
 total_test_results_by_date <- merge(total_cov_tests_by_date, total_pos_cov_tests_by_date)
 
-total_test_results_by_date
+head(total_test_results_by_date)
 ```
 
 ## Transforming and providing analysis on the data (LG 2)
 
-## GLENN
 ```{r}
 ## Positive tests over time
 ## TODO: Create ggplot showing positive tests over time AND change graph labels + explain
@@ -285,7 +283,6 @@ cov_general_data_clean %>% ggplot(aes(x = Province, y = Deceased)) +
   theme(axis.title = element_text())
 ```
 
-## JAMIE
 ```{r}
 ## Total performed tests over time
 ## TODO: Create ggplot showing performed tests over time AND change graph labels + explain
