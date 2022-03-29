@@ -20,7 +20,7 @@ options(scipen=999)
 
 ```{r}
 #Covid-19 Info
-cov_general_data<- read_csv2("../datasets/COVID-19_aantallen_gemeente_cumulatief.csv")
+cov_general_data<- read_csv2("../datasets/COVID-19_aantallen_gemeente_per_dag.csv")
 cov_hospital_data <- read_csv2("../datasets/COVID-19_ziekenhuisopnames.csv")
 cov_performed_tests <- read_csv2("../datasets/COVID-19_uitgevoerde_testen.csv")
 #Other info
@@ -57,10 +57,14 @@ cov_general_data_clean
 
 ```{r}
 ## Remove variables that we are not going to use from cov_general_data
-## TODO: Here remove Municipality_name, Municipality_code and Hospital Admission from cov_general_data
-cov_general_data_clean$Municipality_name <- NULL
+## TODO: Here remove the unnecessary variables from cov_general_data
+cov_general_data_clean$Security_region_code <- NULL
+cov_general_data_clean$Security_region_name <- NULL
+cov_general_data_clean$Version <- NULL
+cov_general_data_clean$Municipal_health_service <- NULL
+cov_general_data_clean$ROAZ_region <- NULL
 cov_general_data_clean$Municipality_code <- NULL
-cov_general_data_clean$Hospital_admission <- NULL
+cov_general_data_clean$Municipality_name <- NULL
 
 cov_general_data_clean
 ```
@@ -218,20 +222,20 @@ total_test_results_by_date
 ```{r}
 ## Positive tests over time
 ## TODO: Create ggplot showing positive tests over time AND change graph labels + explain
-cov_general_data_clean %>% ggplot(aes(x = Date_of_report, y = Total_reported)) + 
+cov_general_data_clean %>% ggplot(aes(x = Date_of_publication, y = Total_reported)) + 
   geom_line(color = "darkgreen") + 
-  labs(title = "Total Positive tests over time",
-       subtitle = "Date of report: Number of reports per day that were newly received by the RIVM,\n submitted from 10:01 a.m. yesterday to 10:00 a.m. today. \nThe publication date may differ from the date of the positive test result.\n\nTotal positive tested: The number of people reported to the GGD who tested positive\n for SARS-CoV-2 at the time of publication.\n\nFrom 2020-03-10 till 2022-03-10",
-       y = "Total positive tested",
-       x = "Date of report") + 
+  labs(title = "Total positive tests over time",
+       subtitle = "Date of publication: This is the daily number of reports newly received by the RIVM.\nThe time period in which the report was submitted runs\nfrom 10.01 a.m. yesterday to 10.00 a.m. today.\n\nTotal reported: The number of new persons reported to the GGD who tested positive \nfor SARS-CoV-2 published by the RIVM on date of publication.\n\nFrom 2020-02-28 till 2022-03-28",
+       y = "Total reported",
+       x = "Date of publication") + 
   theme_fivethirtyeight() +
   theme(axis.title = element_text())
 
 cov_general_data_clean %>% ggplot(aes(x = Province, y = Total_reported)) + 
   geom_bar(stat = "identity", fill = "blue") + coord_flip() + 
-  labs(title = "Total Positive tests over time",
-       subtitle = "Province: Name of the province\n\nTotal positive tested: The number of people reported to the GGD \nwho tested positive for SARS-CoV-2 at the time of publication.\n\nFrom 2020-03-10 till 2022-03-10",
-       y = "Total positive tested",
+  labs(title = "Total positive tests over time",
+       subtitle = "Province: Name of the province\n\nTotal reported: The number of people reported to the GGD \nwho tested positive for SARS-CoV-2 at the time of publication.\n\nFrom 2020-02-28 till 2022-03-28",
+       y = "Total reported",
        x = "Province") + 
   theme_fivethirtyeight() +
   theme(axis.title = element_text())
@@ -260,22 +264,21 @@ cov_hospital_data_clean %>% ggplot(aes(x = Province, y = Hospital_admission)) +
 ```
 
 ```{r}
-## IDK WHY BUT THESE NUMBERS LOOK WIERD SO MANY DEAD?
 ## Deceased over time
 ## TODO: Create ggplot showing deceased over time AND change graph labels + explain
-cov_general_data_clean %>% ggplot(aes(x = Date_of_report, y = Deceased)) + 
+cov_general_data_clean %>% ggplot(aes(x = Date_of_publication, y = Deceased)) + 
   geom_line(color = "darkgreen") + 
   labs(title = "Deceased over time",
-       subtitle = "Date of report: Number of people reported to the GGD who tested positive for SARS-CoV-2 \nat the time of publication.\n\nDeceased: The number of deceased persons reported to the GGD who tested positive for \nSARS-CoV-2 at the time of publication. The actual number of deceased persons positive \nis higher than the number reported in surveillance \nbecause not all deceased persons are tested.\n\nFrom 2020-03-10 till 2022-03-10",
+       subtitle = "Date of publication: This is the daily number of reports newly received by the RIVM.\nThe time period in which the report was submitted runs\nfrom 10.01 a.m. yesterday to 10.00 a.m. today.\n\nDeceased: The number of deceased persons reported to the GGDs who tested positive \nfor SARS-CoV-2 on date of publication was published by the RIVM. \nThe actual number of SARS-CoV-2 positive persons is higher than the number of reports \nin the surveillance, because not all deceased persons are tested. This is because there \nis no mandatory reporting requirement for deaths of people with a positive test result.\n\nFrom 2020-02-28 till 2022-03-28",
        y = "Deceased",
-       x = "Date of report") + 
+       x = "Date of publication") + 
   theme_fivethirtyeight() +
   theme(axis.title = element_text())
 
 cov_general_data_clean %>% ggplot(aes(x = Province, y = Deceased)) + 
   geom_bar(stat = "identity", fill = "blue") + coord_flip() + 
   labs(title = "Deceased over time",
-       subtitle = "Province: Name of the province\n\nTotal deceased: Number of deceased persons reported to the GGD who tested \npositive for SARS-CoV-2 at the time of publication. The actual number of \ndeceased persons positive is higher than the number reported in surveillance \nbecause not all deceased persons are tested.\n\nFrom 2020-03-10 till 2022-03-10",
+       subtitle = "Province: Name of the province\n\nDeceased: The number of deceased persons reported to the GGDs who tested \npositive for SARS-CoV-2 on date of publication was published by the RIVM.\n\nFrom 2020-02-28 till 2022-03-28",
        y = "Deceased",
        x = "Province") + 
   theme_fivethirtyeight() +
@@ -329,14 +332,16 @@ total_test_results_by_date %>% ggplot(aes(x = Date_of_report)) +
 
 ```{r}
 # attach(cov_general_data_clean)
-##reg1 <- lm(formula = Total_reported ~ Deceased + I(Deceased^2), data=cov_general_data_clean)
-# reg1 <- lm(formula = Total_reported ~ Deceased, data=cov_general_data_clean)
+# reg1 <- lm(formula = Total_reported ~ Deceased + I(Deceased^2), data=cov_general_data_clean)
+# # reg1 <- lm(formula = Total_reported ~ Deceased, data=cov_general_data_clean)
 # 
 # summary(reg1)
 # plot(Deceased, Total_reported, main="Scatterplot")
+# # cor(Deceased, Total_reported)
+# cor(Deceased, I(Deceased^2))
 # abline(reg1, col="red")
-# ##cor(Deceased, I(Deceased^2))
-# cor(Deceased, Total_reported)
+
+
 # 
 # reg1 <- lm(formula = Deceased ~ Total_reported, data=cov_general_data_clean)
 # summary(reg1)
@@ -363,28 +368,28 @@ total_test_results_by_date %>% ggplot(aes(x = Date_of_report)) +
 # plot(Deceased, Total_reported)
 # plot(Total_reported, Deceased)
 
+## NIEUWE
 # eerste regression
 # verschil tussen vorige en nieuwe doden
 # 
-cov_general_data_clean_reg <- cov_general_data_clean %>% group_by(month=floor_date(Date_of_report, "month")) %>%
+cov_general_data_clean_reg <- cov_general_data_clean %>% group_by(month=floor_date(Date_of_publication, "month")) %>%
    summarize(Deceased=sum(Deceased))
 
 x <- c(cov_general_data_clean_reg$month)
 y <- c(cov_general_data_clean_reg$Deceased)
 relation <- lm(x~y)
 
-plot(x,y,col = "blue",main = "Deceased per month (2020-3-13 | 2022-3-13)",
+plot(x,y,col = "blue",main = "Deceased per month (2020-2-28 | 2022-3-28)",
 abline(lm(y~x)),cex = 1.3,pch = 16,xlab = "Month",ylab = "Deceased")
 
 # tweede regression
-cov_general_data_clean_reg <- cov_general_data_clean %>% group_by(month=floor_date(Date_of_report, "month")) %>%
+cov_general_data_clean_reg <- cov_general_data_clean %>% group_by(month=floor_date(Date_of_publication, "month")) %>%
    summarize(Total_reported=sum(Total_reported))
 
 x <- c(cov_general_data_clean_reg$month)
 y <- c(cov_general_data_clean_reg$Total_reported)
 relation <- lm(x~y)
 
-plot(x,y,col = "blue",main = "Total positive reports per month (2020-3-13 | 2022-3-13)",
+plot(x,y,col = "blue",main = "Total positive reports per month (2020-2-28 | 2022-3-28)",
 abline(lm(y~x)),cex = 1.3,pch = 16,xlab = "Month",ylab = "Total positive reports")
-
 ```
