@@ -40,7 +40,6 @@ head(res_count_per_province_nl)
 ## TODO: Uitleg geven van variables
 ## Cleaning, mutating and filtering data (LG 1)
 
-## GLENN
 ```{r}
 ## Let's filter out the null values from cov_general_data where the province is null since we cant use those in our research
 ## TODO: Here filter out the null values from cov_general_data_clean
@@ -71,7 +70,6 @@ cov_general_data_clean$Municipality_name <- NULL
 head(cov_general_data_clean)
 ```
 
-## JAMIE
 ```{r}
 ## Filter null values out of the dataset cov_hospital_data_clean
 ## TODO: Here filter out the rows where the is Security_region_name not available
@@ -133,12 +131,15 @@ names(res_count_per_province_nl)[1] <- "Province"
 names(res_count_per_province_nl)[2] <- "Period"
 names(res_count_per_province_nl)[3] <- "Amount"
 ## Remove the (PV) tag from province
-res_count_per_province_nl$Province = gsub('.{4}$', '', res_count_per_province_nl$Province)
+res_count_per_province_nl$Province = gsub('.{5}$', '', res_count_per_province_nl$Province)
+## renaming for consistency
+res_count_per_province_nl <- res_count_per_province_nl %>%
+  mutate(Province = replace(Province, Province == "Fryslân", "Friesland"))
 
 head(res_count_per_province_nl)
 ```
 ```{r}
-## Rename 'Fryslân' to 'Friesland' in cov_preformed_tests
+## Rename 'Fryslân' to 'Friesland' in cov_performed_tests
 ## TODO: Here rename 'Fryslân' to 'Friesland' for consistency sake.
 cov_performed_tests <- cov_performed_tests %>%
   mutate(Security_region_name = replace(Security_region_name, Security_region_name == "Fryslân", "Friesland"))
@@ -166,6 +167,8 @@ head(cov_performed_tests)
 ## Remove unused variables from the "Performed tests" dataset
 cov_performed_tests$Security_region_code <- NULL
 cov_performed_tests$Security_region_name <- NULL
+
+head(cov_performed_tests)
 ```
 
 ```{r}
@@ -216,6 +219,9 @@ head(total_pos_cov_tests_by_date)
 total_test_results_by_date <- merge(total_cov_tests_by_date, total_pos_cov_tests_by_date)
 
 head(total_test_results_by_date)
+```
+
+```{r}
 ```
 
 ## Transforming and providing analysis on the data (LG 2)
@@ -316,6 +322,15 @@ total_test_results_by_date %>% ggplot(aes(x = Date_of_report)) +
 ```{r}
 ## Total performed tests compared to population per province
 ## TODO: Create ggplot showing performed tests compared to pop over time AND change graph labels + explain
+ggplot(data = res_count_per_province_nl, aes(x = Province)) + 
+  geom_bar(aes(y = Amount), stat = 'identity', fill = 'steelblue') +
+  coord_flip() + 
+  labs(title = "Performed tests compared to the population\nper province",
+       subtitle = "",
+       y = "Count",
+       x = "Province") + 
+  theme_fivethirtyeight() +
+  theme(axis.title = element_text())
 
 ```
 
@@ -393,13 +408,6 @@ summary(lm(Deceased ~ Total_reported, data = cov_general_data_clean))
 # The standard error for Deceased is a distance of 0.000799811 deceased, which is the average distance that falls from the regression. For the Total positive reported, this standard error comes with a distance of 0.000007209 reports.
 # 
 # The null hypothesis from this regression (which is "There is a relation between Deceased and total reports from a COVID record") shows that the chance that the null hypothesis is true, is very low. In this case, it tells us that we cant say that the relationship between Deceased and Total_reports is very strong, nor that we are absolutely sure that a systematic relationship is present.
-
-
-
-
-
-
-
 # tweede regression
 # aantal positieven per maand in de loop van 2020-2-28 tot en met 2022-3-28
 cov_general_data_clean_reg <- cov_general_data_clean %>% group_by(month=floor_date(Date_of_publication, "month")) %>%
