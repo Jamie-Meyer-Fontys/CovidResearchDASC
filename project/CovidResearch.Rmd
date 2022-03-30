@@ -346,43 +346,6 @@ ggplot(data = res_count_per_province_nl, aes(x = Province)) +
 ## Regression Glenn
 
 ```{r}
-# attach(cov_general_data_clean)
-# reg1 <- lm(formula = Total_reported ~ Deceased + I(Deceased^2), data=cov_general_data_clean)
-# # reg1 <- lm(formula = Total_reported ~ Deceased, data=cov_general_data_clean)
-# 
-# summary(reg1)
-# plot(Deceased, Total_reported, main="Scatterplot")
-# # cor(Deceased, Total_reported)
-# cor(Deceased, I(Deceased^2))
-# abline(reg1, col="red")
-
-
-# 
-# reg1 <- lm(formula = Deceased ~ Total_reported, data=cov_general_data_clean)
-# summary(reg1)
-# plot(Total_reported, Deceased, main="Scatterplot")
-# abline(reg1, col="red")
-# cor(Total_reported, Deceased)
-
-# x <- c(cov_general_data_clean$Total_reported)
-# y <- c(cov_general_data_clean$Deceased)
-# # relation <- lm(x~y)
-# 
-# plot(x,y,col = "blue",main = "Deceased over total reports",
-# abline(lm(y~x)),cex = 1.3,pch = 16,xlab = "Total reports",ylab = "Deceased")
-# 
-# plot(y,x,col = "blue",main = "Deceased over total reports",
-# abline(lm(x~y)),cex = 1.3,pch = 16,xlab = "Deceased",ylab = "Total reports")
-
-# a <- data.frame(x)
-# result <- predict(relation,a)
-
-# print(summary(relation))
-# print(result)
-
-# plot(Deceased, Total_reported)
-# plot(Total_reported, Deceased)
-
 ## NIEUWE
 # eerste regression
 # 
@@ -409,50 +372,4 @@ summary(lm(Deceased ~ Total_reported, data = cov_general_data_clean))
 # Mulitple R-squared: From this regression output, the R-squared value is 0.003865 which is very low
 
 # Adjusted R-squared: The adjusted R-squared value doesn't fall far away from the multiple R-squared value. The distance between the multiple and adjusted R-squared value is 0.000004 (adjusted is 0.003861)
-
-# Tweede nieuwe regression
-
-reg2 <- cov_general_data_clean %>% group_by(month=floor_date(Date_of_publication, "month")) %>%
-   summarize(Deceased=sum(Deceased))
-
-month <- c(reg2$month)
-y <- c(reg2$Deceased)
-
-plot(x,y,col = "blue",main = "Deceased per month (2020-2-28 | 2022-3-28)",
-abline(lm(y~month)),cex = 1.3,pch = 16,xlab = "Month",ylab = "Deceased")
-summary(lm(y ~ month, data = reg2))
-
-# coefficients:
-
-# Estimate: 
-# 
-# Std. Error: 
-# 
-# T test and signif. code: 
-#
-# Residual standard error: 
-#
-# Mulitple R-squared: 
-
-# Adjusted R-squared: 
-
-# tweede regression
-# aantal positieven per maand in de loop van 2020-2-28 tot en met 2022-3-28
-cov_general_data_clean_reg <- cov_general_data_clean %>% group_by(month=floor_date(Date_of_publication, "month")) %>%
-   summarize(Total_reported=sum(Total_reported))
-
-summary(lm(Total_reported ~ Date_of_publication, data = cov_general_data_clean))
-
-x <- c(cov_general_data_clean_reg$month)
-y <- c(cov_general_data_clean_reg$Total_reported)
-
-plot(x,y,col = "blue",main = "Total positive reports per month (2020-2-28 | 2022-3-28)",
-abline(lm(y~x)),cex = 1.3,pch = 16,xlab = "Month",ylab = "Total positive reports")
-
-# derde regression
-
-summary(lm(Deceased ~ Total_reported, data = cov_general_data_clean))
-
-plot(cov_general_data_clean$Total_reported,cov_general_data_clean$Deceased,col = "blue",main = "test",
-abline(lm(Deceased~Total_reported, data=cov_general_data_clean)),cex = 1.3,pch = 16,xlab = "Total positive reports",ylab = "Deceased")
 ```
