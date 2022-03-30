@@ -408,8 +408,26 @@ summary(lm(Deceased ~ Total_reported, data = cov_general_data_clean))
 # What I want to find out is the deceased over the positive tests
 
 # 2. Je variabelen voorbereiden (waarom ga je ze gebruiken)
-
+# Tested_positive
+# Deceased
+# Province
+# 
 # 3. Visualiseren van je variabelen
+backup < cov_general_data_clean
+cov_general_data_clean <- backup
+
+test <- aggregate(cov_general_data_clean$Deceased, list(cov_general_data_clean$Date_of_publication), max)
+test2 <- aggregate(cov_general_data_clean$Total_reported, list(cov_general_data_clean$Date_of_publication), max)
+
+names(test)[1] <- "Date_of_report"
+names(test)[2] <- "Deceased"
+names(test2)[1] <- "Date_of_report"
+names(test2)[2] <- "Positive_tests"
+
+final <- merge(test, test2)
+
+ggplot(final, aes(Positive_tests, Deceased)) + geom_point() + geom_smooth(method="lm")
+summary(lm(final$Deceased~final$Positive_tests))
 # 4. Regression zelf
 # 5. Uitleggen van de coefficients
 # 6. Residuals Uitleggen
