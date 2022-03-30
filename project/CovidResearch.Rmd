@@ -232,7 +232,7 @@ head(total_test_results_by_date)
 cov_general_data_clean %>% ggplot(aes(x = Date_of_publication, y = Total_reported)) + 
   geom_line(color = "darkgreen") + 
   labs(title = "Total positive tests over time",
-       subtitle = "Date of publication: This is the daily number of reports newly received by the RIVM.\nThe time period in which the report was submitted runs\nfrom 10.01 a.m. yesterday to 10.00 a.m. today.\n\nTotal reported: The number of new persons reported to the GGD who tested positive \nfor SARS-CoV-2 published by the RIVM on date of publication.\n\nFrom 2020-02-28 till 2022-03-28",
+       subtitle = "Date of publication: This is the daily number of reports newly received by the RIVM.\nThe time period in which the report was submitted runs\nfrom 10.01 a.m. yesterday to 10.00 a.m. today.\n\nTotal reported: The number of new persons reported to the GGD who tested positive \nfor SARS-CoV-2 published by the RIVM on date of publication.\n\nFrom 2020-02-28 till 2022-03-29",
        y = "Total reported",
        x = "Date of publication") + 
   theme_fivethirtyeight() +
@@ -241,7 +241,7 @@ cov_general_data_clean %>% ggplot(aes(x = Date_of_publication, y = Total_reporte
 cov_general_data_clean %>% ggplot(aes(x = Province, y = Total_reported)) + 
   geom_bar(stat = "identity", fill = "blue") + coord_flip() + 
   labs(title = "Total positive tests over time",
-       subtitle = "Province: Name of the province\n\nTotal reported: The number of people reported to the GGD \nwho tested positive for SARS-CoV-2 at the time of publication.\n\nFrom 2020-02-28 till 2022-03-28",
+       subtitle = "Province: Name of the province\n\nTotal reported: The number of people reported to the GGD \nwho tested positive for SARS-CoV-2 at the time of publication.\n\nFrom 2020-02-28 till 2022-03-29",
        y = "Total reported",
        x = "Province") + 
   theme_fivethirtyeight() +
@@ -372,4 +372,18 @@ summary(lm(Deceased ~ Total_reported, data = cov_general_data_clean))
 # Mulitple R-squared: From this regression output, the R-squared value is 0.003865 which is very low
 
 # Adjusted R-squared: The adjusted R-squared value doesn't fall far away from the multiple R-squared value. The distance between the multiple and adjusted R-squared value is 0.000004 (adjusted is 0.003861)
+
+
+# 1. Uitleggen wat je goal is.
+
+# Goal: Find out the deceased over positive tests from The Netherlands
+# What I want to find out is the deceased over the positive tests
+
+# 2. Je variabelen voorbereiden (waarom ga je ze gebruiken)
+
+# 3. Visualiseren van je variabelen
+# 4. Regression zelf
+# 5. Uitleggen van de coefficients
+# 6. Residuals Uitleggen
+# 7. De conclusie waarom is het goed of juist slecht.
 ```
