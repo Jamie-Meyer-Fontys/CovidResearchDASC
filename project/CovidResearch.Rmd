@@ -413,7 +413,7 @@ summary(lm(Deceased ~ Total_reported, data = cov_general_data_clean))
 # Province
 # 
 # 3. Visualiseren van je variabelen
-backup < cov_general_data_clean
+backup <- cov_general_data_clean
 cov_general_data_clean <- backup
 
 test <- aggregate(cov_general_data_clean$Deceased, list(cov_general_data_clean$Date_of_publication), max)
@@ -428,6 +428,9 @@ final <- merge(test, test2)
 
 ggplot(final, aes(Positive_tests, Deceased)) + geom_point() + geom_smooth(method="lm")
 summary(lm(final$Deceased~final$Positive_tests))
+
+par(mfrow=c(2,2))
+plot(lm(final$Deceased~final$Positive_tests))
 # 4. Regression zelf
 # 5. Uitleggen van de coefficients
 # 6. Residuals Uitleggen
