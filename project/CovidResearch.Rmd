@@ -34,6 +34,7 @@ res_count_per_province_nl <- read_csv2("../datasets/Bevolkings_aantallen_per_pro
 head(cov_general_data)
 head(cov_hospital_data)
 head(res_count_per_province_nl)
+head(cov_performed_tests)
 ```
 
 ## Let's explain the relevant variables and why/how we are going to use them: (TO NEXT MEET UP)
@@ -138,19 +139,20 @@ res_count_per_province_nl <- res_count_per_province_nl %>%
 
 head(res_count_per_province_nl)
 ```
+
 ```{r}
-## Rename 'Fryslân' to 'Friesland' in cov_performed_tests
+## Rename 'Fryslân' to 'Friesland' in cov_perfomed_tests_clean
 ## TODO: Here rename 'Fryslân' to 'Friesland' for consistency sake.
-cov_performed_tests <- cov_performed_tests %>%
+cov_perfomed_tests_clean <- cov_performed_tests %>%
   mutate(Security_region_name = replace(Security_region_name, Security_region_name == "Fryslân", "Friesland"))
 
-head(cov_performed_tests)
+head(cov_perfomed_tests_clean)
 ```
 
 ```{r}
 ## Filter the dataset "Performed tests" to also group security regions
 ## TODO: Filter the dataset "Performed tests" to also group security regions
-cov_performed_tests <- cov_performed_tests %>%
+cov_perfomed_tests_clean <- cov_perfomed_tests_clean %>%
   mutate(Province = case_when(
     Security_region_code %in% overijssel_vr ~ 'Overijssel',
     Security_region_code %in% gelderland_vr ~ 'Gelderland',
@@ -160,33 +162,33 @@ cov_performed_tests <- cov_performed_tests %>%
     Security_region_code %in% limburg_vr ~ 'Limburg',
     TRUE ~ Security_region_name))
 
-head(cov_performed_tests)
+head(cov_perfomed_tests_clean)
 ```
 
 ```{r}
 ## Remove unused variables from the "Performed tests" dataset
-cov_performed_tests$Security_region_code <- NULL
-cov_performed_tests$Security_region_name <- NULL
+cov_perfomed_tests_clean$Security_region_code <- NULL
+cov_perfomed_tests_clean$Security_region_name <- NULL
 
-head(cov_performed_tests)
+head(cov_perfomed_tests_clean)
 ```
 
 ```{r}
 ## calculate the cumulative sum of all preformed tests and positive tests per date
-cov_performed_tests <- cov_performed_tests %>%
+cov_perfomed_tests_clean <- cov_perfomed_tests_clean %>%
   group_by(Date_of_statistics) %>%
   mutate(Total_tested_with_result = cumsum(Tested_with_result)) %>%
   mutate(Total_tested_positive = cumsum(Tested_positive))
 
-head(cov_performed_tests)
+head(cov_perfomed_tests_clean)
 ```
 
 ```{r}
 ## aggergate the Total_tested_with_result and Total_tested_positive to eventually get the total over time
-total_cov_tests_by_date <- aggregate(cov_performed_tests$Total_tested_with_result, list(cov_performed_tests$Date_of_statistics), max)
+total_cov_tests_by_date <- aggregate(cov_perfomed_tests_clean$Total_tested_with_result, list(cov_perfomed_tests_clean$Date_of_statistics), max)
 head(total_cov_tests_by_date)
 
-total_pos_cov_tests_by_date <- aggregate(cov_performed_tests$Total_tested_positive, list(cov_performed_tests$Date_of_statistics), max)
+total_pos_cov_tests_by_date <- aggregate(cov_perfomed_tests_clean$Total_tested_positive, list(cov_perfomed_tests_clean$Date_of_statistics), max)
 head(total_pos_cov_tests_by_date)
 ```
 
@@ -222,6 +224,19 @@ head(total_test_results_by_date)
 ```
 
 ```{r}
+## add population numbers to the correct province in the performed tests dataset
+merged_res_count_general_data <- merge(cov_perfomed_tests_clean, res_count_per_province_nl, by= c("Province", "Province"))
+
+# remove not needed variables
+merged_res_count_general_data$Period <- NULL
+
+#rename population amount variable
+merged_res_count_general_data <- merged_res_count_general_data %>% 
+  rename( Resident_count = Amount)
+
+# set duplicates to 0 for to make it easier to plot
+merged_res_count_general_data$Resident_count[duplicated(merged_res_count_general_data$Resident_count)] <- 0
+
 ```
 
 ## Transforming and providing analysis on the data (LG 2)
@@ -322,21 +337,34 @@ total_test_results_by_date %>% ggplot(aes(x = Date_of_report)) +
 ```{r}
 ## Total performed tests compared to population per province
 ## TODO: Create ggplot showing performed tests compared to pop over time AND change graph labels + explain
-ggplot(data = res_count_per_province_nl, aes(x = Province)) + 
-  geom_bar(aes(y = Amount), stat = 'identity', fill = 'steelblue') +
+ggplot(data = merged_res_count_general_data, aes(x = Province)) + 
+  geom_bar(aes(y = Tested_with_result), stat = 'identity', fill = 'steelblue') +
+  geom_bar(aes(y = Resident_count), stat = 'identity', fill = 'red') +
   coord_flip() + 
   labs(title = "Performed tests compared to the population\nper province",
-       subtitle = "",
+       subtitle = "\nRed: Province population\nBlue: Performed tests in province\n",
        y = "Count",
        x = "Province") + 
+  scale_y_continuous(n.breaks = 6) +
   theme_fivethirtyeight() +
   theme(axis.title = element_text())
-
 ```
 
 ```{r}
 ## Total performed tests and positive tests compared to population per province
 ## TODO: Create ggplot showing performed tests and positive tests compared to pop over time AND change graph labels + explain
+ggplot(data = merged_res_count_general_data, aes(x = Province)) + 
+  geom_bar(aes(y = Tested_with_result), stat = 'identity', fill = 'steelblue') +
+  geom_bar(aes(y = Resident_count), stat = 'identity', fill = 'chartreuse3') +
+  geom_bar(aes(y = Tested_positive), stat = 'identity', fill = 'darkorchid3') +
+  coord_flip() + 
+  labs(title = "Performed tests and positive tests\ncompared to the population per province",
+       subtitle = "\nGreen: Province population\nBlue: Performed tests in province\nPurple: Positive tests in province\n",
+       y = "Count",
+       x = "Province") + 
+  scale_y_continuous(n.breaks = 6) +
+  theme_fivethirtyeight() +
+  theme(axis.title = element_text())
 ```
 
 ## Regression (LG 3)
