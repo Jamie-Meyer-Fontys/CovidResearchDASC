@@ -141,18 +141,18 @@ head(res_count_per_province_nl)
 ```
 
 ```{r}
-## Rename 'Fryslân' to 'Friesland' in cov_perfomed_tests_clean
+## Rename 'Fryslân' to 'Friesland' in cov_performed_tests_clean
 ## TODO: Here rename 'Fryslân' to 'Friesland' for consistency sake.
-cov_perfomed_tests_clean <- cov_performed_tests %>%
+cov_performed_tests_clean <- cov_performed_tests %>%
   mutate(Security_region_name = replace(Security_region_name, Security_region_name == "Fryslân", "Friesland"))
 
-head(cov_perfomed_tests_clean)
+head(cov_performed_tests_clean)
 ```
 
 ```{r}
 ## Filter the dataset "Performed tests" to also group security regions
 ## TODO: Filter the dataset "Performed tests" to also group security regions
-cov_perfomed_tests_clean <- cov_perfomed_tests_clean %>%
+cov_performed_tests_clean <- cov_performed_tests_clean %>%
   mutate(Province = case_when(
     Security_region_code %in% overijssel_vr ~ 'Overijssel',
     Security_region_code %in% gelderland_vr ~ 'Gelderland',
@@ -162,33 +162,33 @@ cov_perfomed_tests_clean <- cov_perfomed_tests_clean %>%
     Security_region_code %in% limburg_vr ~ 'Limburg',
     TRUE ~ Security_region_name))
 
-head(cov_perfomed_tests_clean)
+head(cov_performed_tests_clean)
 ```
 
 ```{r}
 ## Remove unused variables from the "Performed tests" dataset
-cov_perfomed_tests_clean$Security_region_code <- NULL
-cov_perfomed_tests_clean$Security_region_name <- NULL
+cov_performed_tests_clean$Security_region_code <- NULL
+cov_performed_tests_clean$Security_region_name <- NULL
 
-head(cov_perfomed_tests_clean)
+head(cov_performed_tests_clean)
 ```
 
 ```{r}
 ## calculate the cumulative sum of all preformed tests and positive tests per date
-cov_perfomed_tests_clean <- cov_perfomed_tests_clean %>%
+cov_performed_tests_clean <- cov_performed_tests_clean %>%
   group_by(Date_of_statistics) %>%
   mutate(Total_tested_with_result = cumsum(Tested_with_result)) %>%
   mutate(Total_tested_positive = cumsum(Tested_positive))
 
-head(cov_perfomed_tests_clean)
+head(cov_performed_tests_clean)
 ```
 
 ```{r}
-## aggergate the Total_tested_with_result and Total_tested_positive to eventually get the total over time
-total_cov_tests_by_date <- aggregate(cov_perfomed_tests_clean$Total_tested_with_result, list(cov_perfomed_tests_clean$Date_of_statistics), max)
+## aggregate the Total_tested_with_result and Total_tested_positive to eventually get the total over time
+total_cov_tests_by_date <- aggregate(cov_performed_tests_clean$Total_tested_with_result, list(cov_performed_tests_clean$Date_of_statistics), max)
 head(total_cov_tests_by_date)
 
-total_pos_cov_tests_by_date <- aggregate(cov_perfomed_tests_clean$Total_tested_positive, list(cov_perfomed_tests_clean$Date_of_statistics), max)
+total_pos_cov_tests_by_date <- aggregate(cov_performed_tests_clean$Total_tested_positive, list(cov_performed_tests_clean$Date_of_statistics), max)
 head(total_pos_cov_tests_by_date)
 ```
 
@@ -225,7 +225,7 @@ head(total_test_results_by_date)
 
 ```{r}
 ## add population numbers to the correct province in the performed tests dataset
-merged_res_count_general_data <- merge(cov_perfomed_tests_clean, res_count_per_province_nl, by= c("Province", "Province"))
+merged_res_count_general_data <- merge(cov_performed_tests_clean, res_count_per_province_nl, by= c("Province", "Province"))
 
 # remove not needed variables
 merged_res_count_general_data$Period <- NULL
@@ -374,64 +374,40 @@ ggplot(data = merged_res_count_general_data, aes(x = Province)) +
 ## Regression Glenn
 
 ```{r}
-## NIEUWE
-# eerste regression
-# 
-
-reg1 <- lm(Deceased ~ Total_reported, data=cov_general_data_clean)
-
-total_reported <- c(cov_general_data_clean$Total_reported)
-deceased <- c(cov_general_data_clean$Deceased)
-
-plot(total_reported,deceased,col = "blue",main = "",
-abline(reg1,cex = 1.3,pch = 16,xlab = "Total reported",ylab = "Deceased"))
-summary(lm(Deceased ~ Total_reported, data = cov_general_data_clean))
-
-# coefficients:
-
-# Estimate: When total reported is 0, estimated deceased is 0.71123766 people. With every increase of total positives by 1, deceased goes up by 0.000238438. Thus, when there are 20000 positive reports then there are 0.71123766 + (0.000238438 * 20000) = 5.479 (5) deceased.
-# 
-# Std. Error: The standard error for Deceased is a distance of 0.000799811 deceased, which is the average distance that falls from the regression. For the Total positive reported, this standard error comes with a distance of 0.000007209 reports.
-# 
-# T test and signif. code: According to the t test, the null hypothesis from this regression (which is "There is a relation between Deceased and total reports from a COVID record") shows that the chance that the null hypothesis is true, is very low. This is also indicated by the signif. code, which is *** in this case. This tells us that we cant say that the relationship between Deceased and Total_reports is very strong, nor that we are absolutely sure that a systematic relationship is present.
-#
-# Residual standard error: The units of deceased deviate from the true regression line by 0.4114 on average. Which is a low average that means that this measures the lack of fit of the model.
-#
-# Mulitple R-squared: From this regression output, the R-squared value is 0.003865 which is very low
-
-# Adjusted R-squared: The adjusted R-squared value doesn't fall far away from the multiple R-squared value. The distance between the multiple and adjusted R-squared value is 0.000004 (adjusted is 0.003861)
-
-
 # 1. Uitleggen wat je goal is.
 
-# Goal: Find out the deceased over positive tests from The Netherlands
-# What I want to find out is the deceased over the positive tests
+# Goal: Find out the total deceased over total positive tests from Limburg
+# What I want to find out is the total deceased over the total positive tests from the province Limburg, because I originate from this province and found it interesting to find this out
 
 # 2. Je variabelen voorbereiden (waarom ga je ze gebruiken)
 # Tested_positive
 # Deceased
-# Province
-# 
+# Province (Limburg)
+# Date of publication
+
 # 3. Visualiseren van je variabelen
-backup <- cov_general_data_clean
-cov_general_data_clean <- backup
 
-test <- aggregate(cov_general_data_clean$Deceased, list(cov_general_data_clean$Date_of_publication), max)
-test2 <- aggregate(cov_general_data_clean$Total_reported, list(cov_general_data_clean$Date_of_publication), max)
+cov_general_data_lim <- cov_general_data_clean
+cov_general_data_lim <- filter(cov_general_data_lim,Province=="Limburg")
 
-names(test)[1] <- "Date_of_report"
-names(test)[2] <- "Deceased"
-names(test2)[1] <- "Date_of_report"
-names(test2)[2] <- "Positive_tests"
+total_deceased <- aggregate(cov_general_data_lim$Deceased, list(cov_general_data_lim$Date_of_publication), sum)
+total_positive <- aggregate(cov_general_data_lim$Total_reported, list(cov_general_data_lim$Date_of_publication), sum)
 
-final <- merge(test, test2)
+names(total_deceased)[1] <- "Date_of_publication"
+names(total_deceased)[2] <- "Deceased"
+names(total_positive)[1] <- "Date_of_publication"
+names(total_positive)[2] <- "Positive_tests"
 
-ggplot(final, aes(Positive_tests, Deceased)) + geom_point() + geom_smooth(method="lm")
-summary(lm(final$Deceased~final$Positive_tests))
+finalReg <- merge(total_deceased, total_positive)
+
+ggplot(finalReg, aes(Positive_tests, Deceased)) + geom_point() + geom_smooth(method="lm")
+
+# 4. Regression zelf
+summary(lm(Deceased~Positive_tests, data=finalReg))
 
 par(mfrow=c(2,2))
-plot(lm(final$Deceased~final$Positive_tests))
-# 4. Regression zelf
+plot(lm(finalReg$Deceased~finalReg$Positive_tests))
+
 # 5. Uitleggen van de coefficients
 # 6. Residuals Uitleggen
 # 7. De conclusie waarom is het goed of juist slecht.
