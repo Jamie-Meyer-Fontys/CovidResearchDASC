@@ -414,10 +414,13 @@ The t value is the estimate from the variable divided by the standard error. In 
 The p-value corresponds to the t-statistic, the smaller the p-value, if the p-value is small that means that the given variable show a high statistical significance which is shown with the amount of asterisk. In this case in my regression the variable shows a p-value with a significance code of '***' meaning that the variable is probably a good addition to this model.
 
 * Residual std error:
+The RSE shows the average difference between the shown outcome values and the predicted values by the model. The lower the RSE the better the model fits to the data. This regression shows an RSE of 486.5 which seems okay given the size of the dataset.
 
-* Multiple R-squared:
+* Multiple R-squared:  
+The multiple R-squared shows how well the the data fits to the regression model and explains the variability in the model. In this case my multiple R-squared is 0.6405 which is pretty good given this is a dataset of the real world where it is usually expected it to be not really high.
 
 * Adjusted R-squared:
+The adjusted R-squared usually changes when u add more than one variable to a model. in this case it stays the same at 0.6405 since this regression is only using one explanatory variable.
 
 ### Looking at the Residuals
 ```{r}
@@ -426,11 +429,16 @@ plot(lm(Tested_positive~Tested_with_result, data = cov_performed_tests_clean))
 ```
 
 * Residuals vs Fitted:
+From the graph you can see that the red line follows the dotted line good enough this mean that the linearity assumption is met.
+
 * Normal Q-Q:
+From the graph you can see that the given quantities generally do follows the dotted line the standard error does show a bit at both extremities so I do think the normality assumption is met.
+
 * Scale-Location:
+From the graph you can see that at higher fitted valued there are more outliers than at lower fitted values so from these observations I don't think it passes the homoscedasticity test since it looks more like heteroscedasticity. This may be the cause of using a population to big in this regression
 
 ### Conslusion about this regression
-
+In general I think the regression is pretty good given the size of the dataset. Next time it might be smarter to choose a smaller subset of the population or a specific province since that might make the model also pass the homoscedasticity test.
 
 ## Regression Glenn
 
