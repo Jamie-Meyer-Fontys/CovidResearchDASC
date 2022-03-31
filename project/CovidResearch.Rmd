@@ -356,9 +356,11 @@ ggplot(data = merged_res_count_general_data, aes(x = Province)) +
 ## Regression Jamie
 
 ### Regression Goal
-Find out the relation between the performed Covid-19 tests and the amount which came back positive.
+
+Find out the relation between the performed and positive Covid-19 tests, especially how the performed tests influence the value of the positive tests
 
 ### Explaining the used variables
+
 * Tested_with_result:   
   Number of Covid-19 tests taken for which results are known.
 * Tested_positive:  
@@ -371,30 +373,31 @@ Both variables come from the cov_performed_tests_clean tibble within the time fr
 Making a simple plot to start visualizing the variables.
 ```{r}
 cov_performed_tests_clean %>%
-  ggplot(aes(x = Tested_positive, y = Tested_with_result)) +
+  ggplot(aes(x = Tested_with_result, y = Tested_positive)) +
   geom_point() +
   geom_smooth(method = "lm", color = "red") +
-  labs(title = "The relation between the performed and positive Covid-19 tests\n", x = "Positive tests", y = "Performed tests") 
+  labs(title = "The relation between the performed and positive Covid-19 tests\n", x = "Performed tests", y = "Positive tests")
 ```
 
 A second one with using bin2d to get a clearer picture on the density of the data points. preventing overplotting if it occurs.
 ```{r}
 cov_performed_tests_clean %>%
-  ggplot(aes(x = Tested_positive, y = Tested_with_result)) +
+  ggplot(aes(x = Tested_with_result, y = Tested_positive)) +
   geom_bin2d() +
   geom_smooth(method = "lm", color = "red") +
-  labs(title = "The relation between the performed and positive Covid-19 tests\n", x = "Positive tests", y = "Performed tests") 
+  labs(title = "The relation between the performed and positive Covid-19 tests\n", x = "Performed tests", y = "Positive tests") 
 ```
 
 ### Regression
 
-In this regression the response variable is Tested_with_result, Tested_positive is the explanatory variable.
+In this regression the response variable is Tested_positive, Tested_with_result is the explanatory variable.
 ```{r}
-summary(lm(Tested_with_result~Tested_positive, data = cov_performed_tests_clean))
+summary(lm(Tested_positive~Tested_with_result, data = cov_performed_tests_clean))
 ```
 
 ### Explaining the coefficients
-* Estimate:
+* Estimate:  
+  The estimate in this regression is used to predict the outcome of the Tested_positive variable. In this instance given the intercept and      slope of about -285.03 and 0.40 respectively you are able to calculate how many of the performed tests will be a positive test. e.g with      1000 performed tests the regression model predicts the amount of positive tests using the formula (-285.03 + (0.40 * 1000) is around 115
 * Std. Error:
 * t value:
 * Pr(>|t|):
@@ -406,7 +409,7 @@ summary(lm(Tested_with_result~Tested_positive, data = cov_performed_tests_clean)
 ```{r}
 # add some plots showing the residuals
 par(mfrow=c(2,2))
-plot(lm(Tested_with_result~Tested_positive, data = cov_performed_tests_clean))
+plot(lm(Tested_positive~Tested_with_result, data = cov_performed_tests_clean))
 ```
 
 * Residuals vs Fitted:
