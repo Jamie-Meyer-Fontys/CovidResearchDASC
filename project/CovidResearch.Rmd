@@ -401,8 +401,9 @@ summary(lm(Tested_positive~Tested_with_result, data = cov_performed_tests_clean)
 
 ### Explaining the coefficients
 * Estimate:  
-  The estimate in this regression is used to predict the outcome of the Tested_positive variable. In this instance given the intercept and      slope of about -285.03 and 0.40 respectively you are able to calculate how many of the performed tests will be a positive test. e.g with      1000 performed tests the regression model predicts the amount of positive tests using the formula (-285.03 + (0.40 * 1000) is around 115
-* Std. Error:
+The estimate in this regression is used to predict the outcome of the Tested_positive variable. In this instance given the intercept and      slope of about -285.03 and 0.40 respectively you are able to calculate how many of the performed tests will be a positive test. e.g with      1000 performed tests the regression model predicts the amount of positive tests is around 115 using the formula (-285.03 + (0.40 * 1000).
+* Std. Error:  
+
 * t value:
 * Pr(>|t|):
 * Residual std error:
