@@ -416,14 +416,21 @@ summary(lm(Deceased~Positive_tests, data=finalReg))
 
 # Residual std error: RSE is the average distance that the observed values fall from the regression line. The distance in this case is 4.933, which means that any prediction about the total deceased in Limburg would be off by 4.933 deceased. I think that this shows that the regression model doesn't really fit the data, because it would be too many deceased that falls from the regression model.
 
-# Multiple R-squared: This gives a measurement of what % of the variance in the response variable can be explained by the regression. In this case, the r-squared is too low to predict anything from the response variable (y as the deceased variable), which gives me more confidence that this regression model becomes not very useable. 
+# Multiple R-squared: This gives a measurement of what % of the variance in the response variable can be explained by the regression. In this case, the r-squared is too low to predict anything from the response variable (y as the deceased variable), which gives me more confidence that this regression model becomes not usable. 
 
-# Adjusted R-squared: The adjusted controls for each additional predictor added (to prevent overfitting), so it may not increase as you add more variables. 
+# Adjusted R-squared: The adjusted controls for each additional predictor added (to prevent overfitting), so it may not increase as you add more variables. Since the Multiple R-squared was very low, it would not make an exception for the adjusted R-squared to be low also.
 
 # 6. Residuals Uitleggen
 par(mfrow=c(2,2))
-plot(lm(finalReg$Deceased~finalReg$Positive_tests))
-# plot(lm(finalReg$Deceased~finalReg$Positive_tests+finalReg$Date_of_publication))
+plot(lm(Deceased~Positive_tests, data=finalReg))
+
+# Residuals vs Fitted: As you can see with the plot that shows the residuals vs the fitted, the red line slightly deviates from the dotted line. For the red line, it means that the linearity assumption is met.
+
+# Normal Q-Q: From the Q-Q plot the residuals hardly follow the dotted line in the plot, which makes it clear that the errors/residuals are not normally distributed. The normality assumption is not met.
+
+# Scale-Location: 
 
 # 7. De conclusie waarom is het goed of juist slecht.
+
+# Conclusion: 
 ```
