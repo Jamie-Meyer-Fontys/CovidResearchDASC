@@ -377,13 +377,13 @@ ggplot(data = merged_res_count_general_data, aes(x = Province)) +
 # 1. Uitleggen wat je goal is.
 
 # Goal: Find out the total deceased over total positive tests from Limburg
-# What I want to find out is the total deceased over the total positive tests from the province Limburg, because I originate from this province and found it interesting to find this out
+# What I want to find out is the total deceased over the total positive tests from the province Limburg, because I originate from this province and found it interesting to find this out.
 
 # 2. Je variabelen voorbereiden (waarom ga je ze gebruiken)
-# Tested_positive
-# Deceased
-# Province (Limburg)
-# Date of publication
+# Tested_positive = The variable that shows the total positive tested residents of the province Limburg
+# Deceased = The variable that shows the total deceased that were tested positive of COVID
+# Province = The chose province (Limburg)
+# Date of publication = Date of announcement to group the total deceased and total positive tests
 
 # 3. Visualiseren van je variabelen
 
@@ -405,10 +405,25 @@ ggplot(finalReg, aes(Positive_tests, Deceased)) + geom_point() + geom_smooth(met
 # 4. Regression zelf
 summary(lm(Deceased~Positive_tests, data=finalReg))
 
+# 5. Uitleggen van de coefficients
+# Estimate: The estimate is used to predict the value of the response variable. In this case the estimate is 2.9298884 deceased when there is a total positive tests at 0. By each time a new positive tests is reported, the deceased variable increases with -0.0001729 deceased.  
+
+# Std. Error: The standard error is a measure of the uncertainty in the estimate of the coefficient. In this case, the calculated deviation of the deceased variable is 0.2003021, and for the positive tests variable the deviation is 0.0001331. Which means that the std error of the deceased variable falls with 0.2003021 deceased from the regression line, and for the positive tests this is 0.0001331 positive tests.
+
+# t value: This is the estimate from the variable devided by its standard error (Estimate / Std. Error). For the deceased this is 14.63 as the t value, where the positive tests is -1.30.
+
+# Pr(>|t|): This gives a p-value for the t-test to determine if the coefficient is significant. From the deceased variable it shows a high statistic significance which is showed with three asterisks (Signif. code ***), being far below 0.05. For the positive tests variable, the statistic significance is very low since it doesn't show a significance code, being above 0.1. With deceased being high, and positive tests being low, we cannot be confident that both variables create a systematic relationship, nor that it is very strong either.
+
+# Residual std error: RSE is the average distance that the observed values fall from the regression line. The distance in this case is 4.933, which means that any prediction about the total deceased in Limburg would be off by 4.933 deceased. I think that this shows that the regression model doesn't really fit the data, because it would be too many deceased that falls from the regression model.
+
+# Multiple R-squared: This gives a measurement of what % of the variance in the response variable can be explained by the regression. In this case, the r-squared is too low to predict anything from the response variable (y as the deceased variable), which gives me more confidence that this regression model becomes not very useable. 
+
+# Adjusted R-squared: The adjusted controls for each additional predictor added (to prevent overfitting), so it may not increase as you add more variables. 
+
+# 6. Residuals Uitleggen
 par(mfrow=c(2,2))
 plot(lm(finalReg$Deceased~finalReg$Positive_tests))
+# plot(lm(finalReg$Deceased~finalReg$Positive_tests+finalReg$Date_of_publication))
 
-# 5. Uitleggen van de coefficients
-# 6. Residuals Uitleggen
 # 7. De conclusie waarom is het goed of juist slecht.
 ```
