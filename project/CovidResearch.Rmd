@@ -400,14 +400,23 @@ summary(lm(Tested_positive~Tested_with_result, data = cov_performed_tests_clean)
 ```
 
 ### Explaining the coefficients
-* Estimate:  
-The estimate in this regression is used to predict the outcome of the Tested_positive variable. In this instance given the intercept and      slope of about -285.03 and 0.40 respectively you are able to calculate how many of the performed tests will be a positive test. e.g with      1000 performed tests the regression model predicts the amount of positive tests is around 115 using the formula (-285.03 + (0.40 * 1000).
-* Std. Error:  
 
-* t value:
-* Pr(>|t|):
+* Estimate:  
+The estimate in this regression is used to predict the outcome of the Tested_positive variable. In this instance given the intercept and      slope of about -285.03 and 0.40 respectively you are able to calculate how many of the performed tests will be a positive test. e.g with      1000 performed tests the regression model predicts the amount of positive tests is around 115 using the formula (-285.03 + (0.40 * 1000)).
+
+* Std. Error: 
+The standard error shows the uncertainty of a given estimate in the coefficients the larger this value the less confident about the estimate. In this case the standard error for the variable Tested_with_result is 0.002306 meaning it can deviate 0.002306 on average.
+
+* t value:  
+The t value is the estimate from the variable divided by the standard error. In this instance the t value given to Tested_with_result is 175.63
+
+* Pr(>|t|):  
+The p-value corresponds to the t-statistic, the smaller the p-value, if the p-value is small that means that the given variable show a high statistical significance which is shown with the amount of asterisk. In this case in my regression the variable shows a p-value with a significance code of '***' meaning that the variable is probably a good addition to this model.
+
 * Residual std error:
+
 * Multiple R-squared:
+
 * Adjusted R-squared:
 
 ### Looking at the Residuals
@@ -481,7 +490,7 @@ summary(lm(Deceased~Positive_tests, data=finalReg))
   
 * Std. Error: The standard error is a measure of the uncertainty in the estimate of the coefficient. In this case, the calculated deviation of the deceased variable is 0.2003021, and for the positive tests variable the deviation is 0.0001331. Which means that the std error of the deceased variable falls with 0.2003021 deceased from the regression line, and for the positive tests this is 0.0001331 positive tests.
   
-* t value: This is the estimate from the variable devided by its standard error (Estimate / Std. Error). For the deceased this is 14.63 as the t value, where the positive tests is -1.30.
+* t value: This is the estimate from the variable divided by its standard error (Estimate / Std. Error). For the deceased this is 14.63 as the t value, where the positive tests is -1.30.
   
 * Pr(>|t|): This gives a p-value for the t-test to determine if the coefficient is significant. From the deceased variable it shows a high statistic significance which is showed with three asterisks (Signif. code ***), being far below 0.05. For the positive tests variable, the statistic significance is very low since it doesn't show a significance code, being above 0.1. With deceased being high, and positive tests being low, we cannot be confident that both variables create a systematic relationship, nor that it is very strong either.
 
