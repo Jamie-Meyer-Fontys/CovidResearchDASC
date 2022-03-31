@@ -29,8 +29,8 @@ res_count_per_province_nl <- read_csv2("../datasets/Bevolkings_aantallen_per_pro
 
 ## Population per province compared to the positive tests, hospital admissions and deaths per province
 
+## Lets first inspect the datasets
 ```{r}
-## lets first inspect the datasets
 head(cov_general_data)
 head(cov_hospital_data)
 head(res_count_per_province_nl)
@@ -41,22 +41,21 @@ head(cov_performed_tests)
 ## TODO: Uitleg geven van variables
 ## Cleaning, mutating and filtering data (LG 1)
 
+## Filter out the null values from cov_general_data where the province is null since we cant use those in our research
 ```{r}
-## Let's filter out the null values from cov_general_data where the province is null since we cant use those in our research
-
 cov_general_data_clean <- filter(cov_general_data,!is.na(Province))
 head(cov_general_data_clean)
 ```
 
-```{r}
 ## Two names of provinces have been detected and we will use "Friesland" for the sake of consistency
+```{r}
 cov_general_data_clean <- cov_general_data_clean %>%
   mutate(Province = replace(Province, Province == "Fryslân", "Friesland"))
 head(cov_general_data_clean)
 ```
 
-```{r}
 ## Remove variables that we are not going to use from cov_general_data
+```{r}
 cov_general_data_clean$Security_region_code <- NULL
 cov_general_data_clean$Security_region_name <- NULL
 cov_general_data_clean$Version <- NULL
@@ -68,25 +67,25 @@ cov_general_data_clean$Municipality_name <- NULL
 head(cov_general_data_clean)
 ```
 
-```{r}
-## Filter null values out of the dataset cov_hospital_data_clean
+## Filter null values out of the dataset cov_hospital_data
 ## Making a new cleaned tibble called cov_hospital_data_clean
+```{r}
 cov_hospital_data_clean <- filter(cov_hospital_data, !is.na(Security_region_name))
 head(cov_hospital_data_clean) 
 ```
 
+## Rename 'Fryslân' to 'Friesland' in cov_hospital_data_clean
 ```{r}
-## Rename 'Fryslân' to 'Friesland' in cov_hospital_data
 cov_hospital_data_clean <- cov_hospital_data_clean %>%
   mutate(Security_region_name = replace(Security_region_name, Security_region_name == "Fryslân", "Friesland"))
 head(cov_hospital_data_clean)
 
 ```
 
-```{r}
 ## Combine security regions into their respective provinces to a province variable to better fit the resident count data for later.
 ## Sorted based off this article wiki https://en.wikipedia.org/wiki/Safety_region
-# only these provinces are fragmented the others are fine.
+## Only the provinces Overijssel, Gelderland, Noord/Zuid-Holland, Noord-Brabant and Limburg are fragmented the others are fine
+```{r}
 overijssel_vr <- c("VR04","VR05")
 gelderland_vr <- c("VR06","VR07","VR08")
 north_holland_vr <- c("VR10","VR11","VR12","VR13","VR14")
@@ -107,9 +106,8 @@ cov_hospital_data_clean <- cov_hospital_data_clean %>%
 head(cov_hospital_data_clean)
 ```
 
-
-```{r}
 ## Remove variables that we are not going to use from cov_hospital_data_clean
+```{r}
 cov_hospital_data_clean$Municipality_name <- NULL
 cov_hospital_data_clean$Municipality_code <- NULL
 cov_hospital_data_clean$Security_region_code <- NULL
@@ -118,14 +116,16 @@ cov_hospital_data_clean$Security_region_name <- NULL
 head(cov_hospital_data_clean)
 ```
 
-```{r}
 ## Remove the pv tag from province
 ## fist rename the names to English
+```{r}
 names(res_count_per_province_nl)[1] <- "Province"
 names(res_count_per_province_nl)[2] <- "Period"
 names(res_count_per_province_nl)[3] <- "Amount"
+
 ## Remove the (PV) tag from province
 res_count_per_province_nl$Province = gsub('.{5}$', '', res_count_per_province_nl$Province)
+
 ## renaming for consistency
 res_count_per_province_nl <- res_count_per_province_nl %>%
   mutate(Province = replace(Province, Province == "Fryslân", "Friesland"))
@@ -133,16 +133,16 @@ res_count_per_province_nl <- res_count_per_province_nl %>%
 head(res_count_per_province_nl)
 ```
 
-```{r}
 ## Rename 'Fryslân' to 'Friesland' in cov_performed_tests_clean
+```{r}
 cov_performed_tests_clean <- cov_performed_tests %>%
   mutate(Security_region_name = replace(Security_region_name, Security_region_name == "Fryslân", "Friesland"))
 
 head(cov_performed_tests_clean)
 ```
 
+## Filter the dataset cov_performed_tests_clean to also group security regions
 ```{r}
-## Filter the dataset "Performed tests" to also group security regions
 cov_performed_tests_clean <- cov_performed_tests_clean %>%
   mutate(Province = case_when(
     Security_region_code %in% overijssel_vr ~ 'Overijssel',
@@ -156,16 +156,16 @@ cov_performed_tests_clean <- cov_performed_tests_clean %>%
 head(cov_performed_tests_clean)
 ```
 
+## Remove unused variables from the cov_performed_tests_clean dataset
 ```{r}
-## Remove unused variables from the "Performed tests" dataset
 cov_performed_tests_clean$Security_region_code <- NULL
 cov_performed_tests_clean$Security_region_name <- NULL
 
 head(cov_performed_tests_clean)
 ```
 
+## Calculate the cumulative sum of all preformed tests and positive tests per date
 ```{r}
-## calculate the cumulative sum of all preformed tests and positive tests per date
 cov_performed_tests_clean <- cov_performed_tests_clean %>%
   group_by(Date_of_statistics) %>%
   mutate(Total_tested_with_result = cumsum(Tested_with_result)) %>%
@@ -174,8 +174,8 @@ cov_performed_tests_clean <- cov_performed_tests_clean %>%
 head(cov_performed_tests_clean)
 ```
 
+## Aggregate the Total_tested_with_result and Total_tested_positive to eventually get the total over time
 ```{r}
-## aggregate the Total_tested_with_result and Total_tested_positive to eventually get the total over time
 total_cov_tests_by_date <- aggregate(cov_performed_tests_clean$Total_tested_with_result, list(cov_performed_tests_clean$Date_of_statistics), max)
 head(total_cov_tests_by_date)
 
@@ -183,8 +183,8 @@ total_pos_cov_tests_by_date <- aggregate(cov_performed_tests_clean$Total_tested_
 head(total_pos_cov_tests_by_date)
 ```
 
+## Rename columms from the datasets "total_cov_tests_by_date" and "total_pos_cov_tests_by_date"
 ```{r}
-## rename columms
 names(total_cov_tests_by_date)[1] <- "Date_of_report"
 names(total_cov_tests_by_date)[2] <- "Tests_done"
 names(total_pos_cov_tests_by_date)[1] <- "Date_of_report"
@@ -194,8 +194,8 @@ head(total_cov_tests_by_date)
 head(total_pos_cov_tests_by_date)
 ```
 
+## Combine the results one last time in seperate tables
 ```{r}
-## combine the results one last time in seperate tables
 total_cov_tests_by_date <- total_cov_tests_by_date %>%
   mutate(Total_tests_over_time = cumsum(Tests_done))
 
@@ -207,37 +207,41 @@ total_pos_cov_tests_by_date <- total_pos_cov_tests_by_date %>%
 head(total_pos_cov_tests_by_date)
 ```
 
+## Combine to one table by date
 ```{r}
-##combine to one table by date
 total_test_results_by_date <- merge(total_cov_tests_by_date, total_pos_cov_tests_by_date)
 
 head(total_test_results_by_date)
 ```
 
+## 1. Add population numbers to the correct province in the performed tests dataset
+## 2. Remove not needed variables, in this case the Period variable
+## 3. Rename population amount variable
+## 4. Set duplicates to 0 for to make it easier to plot
 ```{r}
-## add population numbers to the correct province in the performed tests dataset
+# 1
 merged_res_count_general_data <- merge(cov_performed_tests_clean, res_count_per_province_nl, by= c("Province", "Province"))
 
-# remove not needed variables
+# 2
 merged_res_count_general_data$Period <- NULL
 
-#rename population amount variable
+# 3
 merged_res_count_general_data <- merged_res_count_general_data %>% 
   rename( Resident_count = Amount)
 
-# set duplicates to 0 for to make it easier to plot
+# 4
 merged_res_count_general_data$Resident_count[duplicated(merged_res_count_general_data$Resident_count)] <- 0
 
 ```
 
 ## Transforming and providing analysis on the data (LG 2)
 
+## Positive tests from The Netherlands over time
 ```{r}
-## Positive tests over time
 cov_general_data_clean %>% ggplot(aes(x = Date_of_publication, y = Total_reported)) + 
   geom_line(color = "darkgreen") + 
   labs(title = "Total positive tests over time",
-       subtitle = "Date of publication: This is the daily number of reports newly received by the RIVM.\nThe time period in which the report was submitted runs\nfrom 10.01 a.m. yesterday to 10.00 a.m. today.\n\nTotal reported: The number of new persons reported to the GGD who tested positive \nfor SARS-CoV-2 published by the RIVM on date of publication.\n\nFrom 2020-02-28 till 2022-03-29",
+       subtitle = "Date of publication: This is the daily number of reports newly received by the RIVM.\nThe time period in which the report was submitted runs\nfrom 10.01 a.m. yesterday to 10.00 a.m. today.\n\nTotal reported: The number of new persons reported to the GGD who tested positive \nfor SARS-CoV-2 published by the RIVM on date of publication.\n\nFrom 2020-02-28 till 2022-03-30",
        y = "Total reported",
        x = "Date of publication") + 
   theme_fivethirtyeight() +
@@ -246,15 +250,15 @@ cov_general_data_clean %>% ggplot(aes(x = Date_of_publication, y = Total_reporte
 cov_general_data_clean %>% ggplot(aes(x = Province, y = Total_reported)) + 
   geom_bar(stat = "identity", fill = "blue") + coord_flip() + 
   labs(title = "Total positive tests over time",
-       subtitle = "Province: Name of the province\n\nTotal reported: The number of people reported to the GGD \nwho tested positive for SARS-CoV-2 at the time of publication.\n\nFrom 2020-02-28 till 2022-03-29",
+       subtitle = "Province: Name of the province\n\nTotal reported: The number of people reported to the GGD \nwho tested positive for SARS-CoV-2 at the time of publication.\n\nFrom 2020-02-28 till 2022-03-30",
        y = "Total reported",
        x = "Province") + 
   theme_fivethirtyeight() +
   theme(axis.title = element_text())
 ```
 
+## Hospital admissions from The Netherlands over time
 ```{r}
-## Hospital admissions over time
 cov_hospital_data_clean %>% ggplot(aes(x = Date_of_statistics, y = Hospital_admission)) + 
   geom_line(color = "darkgreen") + 
   labs(title = "Hospital admissions over time",
@@ -274,8 +278,8 @@ cov_hospital_data_clean %>% ggplot(aes(x = Province, y = Hospital_admission)) +
   theme(axis.title = element_text())
 ```
 
+## Deceased from The Netherlands over time
 ```{r}
-## Deceased over time
 cov_general_data_clean %>% ggplot(aes(x = Date_of_publication, y = Deceased)) + 
   geom_line(color = "darkgreen") + 
   labs(title = "Deceased over time",
@@ -295,8 +299,8 @@ cov_general_data_clean %>% ggplot(aes(x = Province, y = Deceased)) +
   theme(axis.title = element_text())
 ```
 
+## Total performed tests from The Netherlands over time
 ```{r}
-## Total performed tests over time
 total_cov_tests_by_date %>% ggplot(aes(x = Date_of_report, y = Total_tests_over_time)) + 
   geom_col(color = "steelblue") +
   labs(title = "Total performed tests over time",
@@ -307,8 +311,8 @@ total_cov_tests_by_date %>% ggplot(aes(x = Date_of_report, y = Total_tests_over_
   theme(axis.title = element_text())
 ```
 
+## Total performed tests and positive tests from The Netherlands over time
 ```{r}
-## Total performed tests and positive tests over time
 total_test_results_by_date %>% ggplot(aes(x = Date_of_report)) + 
   geom_col(aes(y = Total_tests_over_time), color= "steelblue") +
   geom_col(aes(y = Total_positive_tests_over_time), color= "firebrick1") +
@@ -320,8 +324,8 @@ total_test_results_by_date %>% ggplot(aes(x = Date_of_report)) +
   theme(axis.title = element_text())
 ```
 
-```{r}
 ## Total performed tests compared to population per province
+```{r}
 ggplot(data = merged_res_count_general_data, aes(x = Province)) + 
   geom_bar(aes(y = Tested_with_result), stat = 'identity', fill = 'steelblue') +
   geom_bar(aes(y = Resident_count), stat = 'identity', fill = 'red') +
@@ -335,8 +339,8 @@ ggplot(data = merged_res_count_general_data, aes(x = Province)) +
   theme(axis.title = element_text())
 ```
 
-```{r}
 ## Total performed tests and positive tests compared to population per province
+```{r}
 ggplot(data = merged_res_count_general_data, aes(x = Province)) + 
   geom_bar(aes(y = Tested_with_result), stat = 'identity', fill = 'steelblue') +
   geom_bar(aes(y = Resident_count), stat = 'identity', fill = 'chartreuse3') +
@@ -366,7 +370,7 @@ Find out the relation between the performed and positive Covid-19 tests, especia
 * Tested_positive:  
   Number of Covid-19 tests taken with a positive result.
   
-Both variables come from the cov_performed_tests_clean tibble within the time frame from 2020-02-28 till 2022-03-29.
+Both variables come from the cov_performed_tests_clean tibble within the time frame from 2020-02-28 till 2022-03-30.
 
 ### Visualizing variables
 
@@ -407,7 +411,6 @@ summary(lm(Tested_positive~Tested_with_result, data = cov_performed_tests_clean)
 
 ### Looking at the Residuals
 ```{r}
-# add some plots showing the residuals
 par(mfrow=c(2,2))
 plot(lm(Tested_positive~Tested_with_result, data = cov_performed_tests_clean))
 ```
@@ -421,16 +424,27 @@ plot(lm(Tested_positive~Tested_with_result, data = cov_performed_tests_clean))
 
 ## Regression Glenn
 
+### Regression Goal
+Find out the total deceased over total positive tests from Limburg
+
+What I want to find out is the total deceased over the total positive tests from the province Limburg, because I originate from this province and found it interesting to find this out. For this, I will pick the COVID-19_numbers_municipality_per_day cleaned dataset (cov_general_data_clean)
+
+### Explaining the used variables
+* Deceased:   
+  The variable that shows the total deceased that were tested positive of COVID-19.
+* Total_reported:  
+  The variable that shows the total positive tested reports of the province Limburg.
+* Province:  
+  The chosen province (Limburg).
+* Date_of_publication:  
+  Date of announcement to group the total deceased and total positive tests.
+  
+The variables come from the cov_general_data_clean tibble within the time frame from 2020-02-28 till 2022-03-30.
+
+### Visualizing variables
+
+Group the total positive reports and deceased from Limburg
 ```{r}
-
-# Goal: Find out the total deceased over total positive tests from Limburg
-# What I want to find out is the total deceased over the total positive tests from the province Limburg, because I originate from this province and found it interesting to find this out. For this, I will pick the COVID-19_numbers_municipality_per_day cleaned dataset (cov_general_data_clean)
-
-# Tested_positive = The variable that shows the total positive tested reports of the province Limburg
-# Deceased = The variable that shows the total deceased that were tested positive of COVID-19
-# Province = The chosen province (Limburg)
-# Date of publication = Date of announcement to group the total deceased and total positive tests
-
 cov_general_data_lim <- cov_general_data_clean
 cov_general_data_lim <- filter(cov_general_data_lim,Province=="Limburg")
 
@@ -443,36 +457,52 @@ names(total_positive)[1] <- "Date_of_publication"
 names(total_positive)[2] <- "Positive_tests"
 
 finalReg <- merge(total_deceased, total_positive)
+```
 
-ggplot(finalReg, aes(Positive_tests, Deceased)) + geom_point() + geom_smooth(method="lm")
+Making a simple plot to start visualizing the variables.
+```{r}
+finalReg %>%
+  ggplot(aes(Positive_tests, Deceased)) + 
+  geom_point() + 
+  geom_smooth(method="lm") + 
+  labs(title = "The relation between the deceased and positive Covid-19 tests from Limburg\n", x = "Positive tests", y = "Deceased") 
+```
 
+### Regression
+
+In this regression the response variable is Deceased, Positive_tests is the explanatory variable.
+```{r}
 summary(lm(Deceased~Positive_tests, data=finalReg))
+```
 
-# The coefficients
-# Estimate: The estimate is used to predict the value of the response variable. In this case the estimate is 2.9298884 deceased when there is a total positive tests at 0. By each time a new positive tests is reported, the deceased variable increases with -0.0001729 deceased. At first, this does not make any sense, because it would be very strange if we already confirm one or more deaths when we don't have a positive test returned. In addition, the deceased count decreasing with -0.0001729 by every positive test also does not make much sense either. If I had to think of a reason why the deceased decreases, then my only guess would be that more residents in Limburg were getting vaccined per day during the lifespan of the dataset, but I hardly believe that this is the case.
+### Explaining the coefficients
+* Estimate: Estimate: The estimate is used to predict the value of the response variable. In this case the estimate is 2.9298884 deceased when there is a total positive tests at 0. By each time a new positive tests is reported, the deceased variable increases with -0.0001729 deceased. At first, this does not make any sense, because it would be very strange if we already confirm one or more deaths when we don't have a positive test returned. In addition, the deceased count decreasing with -0.0001729 by every positive test also does not make much sense either. If I had to think of a reason why the deceased decreases, then my only guess would be that more residents in Limburg were getting vaccined per day during the lifespan of the dataset, but I hardly believe that this is the case.
+  
+* Std. Error: The standard error is a measure of the uncertainty in the estimate of the coefficient. In this case, the calculated deviation of the deceased variable is 0.2003021, and for the positive tests variable the deviation is 0.0001331. Which means that the std error of the deceased variable falls with 0.2003021 deceased from the regression line, and for the positive tests this is 0.0001331 positive tests.
+  
+* t value: This is the estimate from the variable devided by its standard error (Estimate / Std. Error). For the deceased this is 14.63 as the t value, where the positive tests is -1.30.
+  
+* Pr(>|t|): This gives a p-value for the t-test to determine if the coefficient is significant. From the deceased variable it shows a high statistic significance which is showed with three asterisks (Signif. code ***), being far below 0.05. For the positive tests variable, the statistic significance is very low since it doesn't show a significance code, being above 0.1. With deceased being high, and positive tests being low, we cannot be confident that both variables create a systematic relationship, nor that it is very strong either.
 
-# Std. Error: The standard error is a measure of the uncertainty in the estimate of the coefficient. In this case, the calculated deviation of the deceased variable is 0.2003021, and for the positive tests variable the deviation is 0.0001331. Which means that the std error of the deceased variable falls with 0.2003021 deceased from the regression line, and for the positive tests this is 0.0001331 positive tests.
+* Residual std error:  RSE is the average distance that the observed values fall from the regression line. The distance in this case is 4.933, which means that any prediction about the total deceased in Limburg would be off by 4.933 deceased. I think that this shows that the regression model doesn't really fit the data, because it would be too many deceased that falls from the regression model.
+  
+* Multiple R-squared: This gives a measurement of what % of the variance in the response variable can be explained by the regression. In this case, the r-squared is too low to predict anything from the response variable (y as the deceased variable), which gives me more confidence that this regression model becomes not usable. 
+  
+* Adjusted R-squared: The adjusted controls for each additional predictor added (to prevent overfitting), so it may not increase as you add more variables. Since the Multiple R-squared was very low, it would not make an exception for the adjusted R-squared to be low also.
+  
 
-# t value: This is the estimate from the variable devided by its standard error (Estimate / Std. Error). For the deceased this is 14.63 as the t value, where the positive tests is -1.30.
-
-# Pr(>|t|): This gives a p-value for the t-test to determine if the coefficient is significant. From the deceased variable it shows a high statistic significance which is showed with three asterisks (Signif. code ***), being far below 0.05. For the positive tests variable, the statistic significance is very low since it doesn't show a significance code, being above 0.1. With deceased being high, and positive tests being low, we cannot be confident that both variables create a systematic relationship, nor that it is very strong either.
-
-# Residual std error: RSE is the average distance that the observed values fall from the regression line. The distance in this case is 4.933, which means that any prediction about the total deceased in Limburg would be off by 4.933 deceased. I think that this shows that the regression model doesn't really fit the data, because it would be too many deceased that falls from the regression model.
-
-# Multiple R-squared: This gives a measurement of what % of the variance in the response variable can be explained by the regression. In this case, the r-squared is too low to predict anything from the response variable (y as the deceased variable), which gives me more confidence that this regression model becomes not usable. 
-
-# Adjusted R-squared: The adjusted controls for each additional predictor added (to prevent overfitting), so it may not increase as you add more variables. Since the Multiple R-squared was very low, it would not make an exception for the adjusted R-squared to be low also.
-
-# Residuals
+### Looking at the Residuals
+```{r}
 par(mfrow=c(2,2))
 plot(lm(Deceased~Positive_tests, data=finalReg))
-
-# Residuals vs Fitted: As you can see with the plot that shows the residuals vs the fitted, the red line slightly deviates from the dotted line. For the red line, it means that the linearity assumption is met.
-
-# Normal Q-Q: From the Q-Q plot the residuals hardly follow the dotted line in the plot, which makes it clear that the errors/residuals are not normally distributed. The normality assumption is not met.
-
-# Scale-Location: The residuals in the Scale-Location plot do not show a constant variance at every level of x, instead of homoscedasticity, there is now the opposite: heteroscedasticity. This shows that the regression analysis becomes difficult to trust, it might have said earlier that a high statistic significance is present in the estimate variable, but this showcases that it might not be true.
-
-# Conclusion: 
-# From my linear regression, regression model, and residual plots, I can see that this linear regression is not useful for my chosen dataset. The coefficients were too vague to predict a variable, as shown by the Estimate, the Residual Standard Error, and the Multiple R-Squared from the summary. In addition, the residual plots of the regression model also do not reflect the correct results of what a linear regression should show. And finally, the variables I used for it appear to be unrelated to the linear regression, meaning that the number of deceased from COVID-19 cannot be estimated from the number of positive tests alone. The positive tests on one publication date were sometimes larger than the other positive tests from a different publication date, which also means that there was inconsistency with the number of deceased on a publication date, there are many more factors behind this than just pulling out the positive tests to calculate the total number of deceased, the publication date as an example indicates a certain time/month when the results were recorded, which means that certain events might have happened during that time of the month causing the number of deceased to differ, such as holidays, adapted measures from a press conference, etc. In the end, the performed regression did not meet my goal and it turned out that this regression was not useful for the dataset.
 ```
+
+* Residuals vs Fitted: As you can see with the plot that shows the residuals vs the fitted, the red line slightly deviates from the dotted line. For the red line, it means that the linearity assumption is met.
+  
+* Normal Q-Q: From the Q-Q plot the residuals hardly follow the dotted line in the plot, which makes it clear that the errors/residuals are not normally distributed. The normality assumption is not met.
+  
+* Scale-Location: The residuals in the Scale-Location plot do not show a constant variance at every level of x, instead of homoscedasticity, there is now the opposite: heteroscedasticity. This shows that the regression analysis becomes difficult to trust, it might have said earlier that a high statistic significance is present in the estimate variable, but this showcases that it might not be true.
+  
+
+### Conslusion about this regression
+From my linear regression, regression model, and residual plots, I can see that this linear regression is not useful for my chosen dataset. The coefficients were too vague to predict a variable, as shown by the Estimate, the Residual Standard Error, and the Multiple R-Squared from the summary. In addition, the residual plots of the regression model also do not reflect the correct results of what a linear regression should show. And finally, the variables I used for it appear to be unrelated to the linear regression, meaning that the number of deceased from COVID-19 cannot be estimated from the number of positive tests alone. The positive tests on one publication date were sometimes larger than the other positive tests from a different publication date, which also means that there was inconsistency with the number of deceased on a publication date, there are many more factors behind this than just pulling out the positive tests to calculate the total number of deceased, the publication date as an example indicates a certain time/month when the results were recorded, which means that certain events might have happened during that time of the month causing the number of deceased and total positive tests to differ, such as holidays, adapted measures from a press conference, etc. In the end, the performed regression did not meet my goal and it turned out that this regression was not useful for the dataset.
