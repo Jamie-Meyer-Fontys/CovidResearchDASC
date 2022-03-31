@@ -312,8 +312,8 @@ total_cov_tests_by_date %>% ggplot(aes(x = Date_of_report, y = Total_tests_over_
 total_test_results_by_date %>% ggplot(aes(x = Date_of_report)) + 
   geom_col(aes(y = Total_tests_over_time), color= "steelblue") +
   geom_col(aes(y = Total_positive_tests_over_time), color= "firebrick1") +
-  labs(title = "Total performed tests and positive tests over time",
-       subtitle = "Cumulative performed and positive tests in the Netherlands over time\n\nRed: Positive tests\nBlue: Performed tests",
+  labs(title = "Total performed and positive Covid-19 tests\nover time",
+       subtitle = "Cumulative performed and positive Covid-19 tests in the Netherlands over time\n\nRed: Positive tests\nBlue: Performed tests",
        x = "Date of Report",
        y = "Tests") + 
   theme_fivethirtyeight() +
@@ -326,7 +326,7 @@ ggplot(data = merged_res_count_general_data, aes(x = Province)) +
   geom_bar(aes(y = Tested_with_result), stat = 'identity', fill = 'steelblue') +
   geom_bar(aes(y = Resident_count), stat = 'identity', fill = 'red') +
   coord_flip() + 
-  labs(title = "Performed tests compared to the population\nper province",
+  labs(title = "Performed Covid-19 tests compared to \nthe population per province",
        subtitle = "\nRed: Province population\nBlue: Performed tests in province\n",
        y = "Count",
        x = "Province") + 
@@ -342,7 +342,7 @@ ggplot(data = merged_res_count_general_data, aes(x = Province)) +
   geom_bar(aes(y = Resident_count), stat = 'identity', fill = 'chartreuse3') +
   geom_bar(aes(y = Tested_positive), stat = 'identity', fill = 'darkorchid3') +
   coord_flip() + 
-  labs(title = "Performed tests and positive tests\ncompared to the population per province",
+  labs(title = "Performed and positive Covid-19 tests\ncompared to the population per province",
        subtitle = "\nGreen: Province population\nBlue: Performed tests in province\nPurple: Positive tests in province\n",
        y = "Count",
        x = "Province") + 
@@ -354,6 +354,67 @@ ggplot(data = merged_res_count_general_data, aes(x = Province)) +
 ## Regression (LG 3)
 
 ## Regression Jamie
+
+### Regression Goal
+Find out the relation between the performed Covid-19 tests and the amount which came back positive.
+
+### Explaining the used variables
+* Tested_with_result:   
+  Number of Covid-19 tests taken for which results are known.
+* Tested_positive:  
+  Number of Covid-19 tests taken with a positive result.
+  
+Both variables come from the cov_performed_tests_clean tibble within the time frame from 2020-02-28 till 2022-03-29.
+
+### Visualizing variables
+
+Making a simple plot to start visualizing the variables.
+```{r}
+cov_performed_tests_clean %>%
+  ggplot(aes(x = Tested_positive, y = Tested_with_result)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "red") +
+  labs(title = "The relation between the performed and positive Covid-19 tests\n", x = "Positive tests", y = "Performed tests") 
+```
+
+A second one with using bin2d to get a clearer picture on the density of the data points. preventing overplotting if it occurs.
+```{r}
+cov_performed_tests_clean %>%
+  ggplot(aes(x = Tested_positive, y = Tested_with_result)) +
+  geom_bin2d() +
+  geom_smooth(method = "lm", color = "red") +
+  labs(title = "The relation between the performed and positive Covid-19 tests\n", x = "Positive tests", y = "Performed tests") 
+```
+
+### Regression
+
+In this regression the response variable is Tested_with_result, Tested_positive is the explanatory variable.
+```{r}
+summary(lm(Tested_with_result~Tested_positive, data = cov_performed_tests_clean))
+```
+
+### Explaining the coefficients
+* Estimate:
+* Std. Error:
+* t value:
+* Pr(>|t|):
+* Residual std error:
+* Multiple R-squared:
+* Adjusted R-squared:
+
+### Looking at the Residuals
+```{r}
+# add some plots showing the residuals
+par(mfrow=c(2,2))
+plot(lm(Tested_with_result~Tested_positive, data = cov_performed_tests_clean))
+```
+
+* Residuals vs Fitted:
+* Normal Q-Q:
+* Scale-Location:
+
+### Conslusion about this regression
+
 
 ## Regression Glenn
 
