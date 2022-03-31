@@ -1,10 +1,9 @@
 ---
-title: "CovidResearch"
+title: "Covid Research"
 output:
   html_document: default
   pdf_document: default
 ---
-## Install and load Libraries
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 #install.packages('dplyr')
@@ -27,7 +26,8 @@ cov_performed_tests <- read_csv2("../datasets/COVID-19_uitgevoerde_testen.csv")
 res_count_per_province_nl <- read_csv2("../datasets/Bevolkings_aantallen_per_provincie.csv")
 ```
 
-## Population per province compared to the positive tests, hospital admissions and deaths per province
+## Exploring
+Population per province compared to the positive tests, hospital admissions and deaths per province
 
 ## Lets first inspect the datasets
 ```{r}
@@ -36,12 +36,10 @@ head(cov_hospital_data)
 head(res_count_per_province_nl)
 head(cov_performed_tests)
 ```
-
-## Let's explain the relevant variables and why/how we are going to use them: (TO NEXT MEET UP)
-## TODO: Uitleg geven van variables
-## Cleaning, mutating and filtering data (LG 1)
+# Cleaning, mutating and filtering data (LG 1)
 
 ## Filter out the null values from cov_general_data where the province is null since we cant use those in our research
+### Making a new cleaned tibble called cov_general_data_clean
 ```{r}
 cov_general_data_clean <- filter(cov_general_data,!is.na(Province))
 head(cov_general_data_clean)
@@ -54,7 +52,7 @@ cov_general_data_clean <- cov_general_data_clean %>%
 head(cov_general_data_clean)
 ```
 
-## Remove variables that we are not going to use from cov_general_data
+## Remove variables that we are not going to use from cov_general_data_clean
 ```{r}
 cov_general_data_clean$Security_region_code <- NULL
 cov_general_data_clean$Security_region_name <- NULL
@@ -68,7 +66,7 @@ head(cov_general_data_clean)
 ```
 
 ## Filter null values out of the dataset cov_hospital_data
-## Making a new cleaned tibble called cov_hospital_data_clean
+### Making a new cleaned tibble called cov_hospital_data_clean
 ```{r}
 cov_hospital_data_clean <- filter(cov_hospital_data, !is.na(Security_region_name))
 head(cov_hospital_data_clean) 
@@ -83,8 +81,8 @@ head(cov_hospital_data_clean)
 ```
 
 ## Combine security regions into their respective provinces to a province variable to better fit the resident count data for later.
-## Sorted based off this article wiki https://en.wikipedia.org/wiki/Safety_region
-## Only the provinces Overijssel, Gelderland, Noord/Zuid-Holland, Noord-Brabant and Limburg are fragmented the others are fine
+### Sorted based off this article wiki https://en.wikipedia.org/wiki/Safety_region
+### Only the provinces Overijssel, Gelderland, Noord/Zuid-Holland, Noord-Brabant and Limburg are fragmented the others are fine
 ```{r}
 overijssel_vr <- c("VR04","VR05")
 gelderland_vr <- c("VR06","VR07","VR08")
@@ -117,7 +115,7 @@ head(cov_hospital_data_clean)
 ```
 
 ## Remove the pv tag from province
-## fist rename the names to English
+### First rename the names to English
 ```{r}
 names(res_count_per_province_nl)[1] <- "Province"
 names(res_count_per_province_nl)[2] <- "Period"
@@ -164,7 +162,7 @@ cov_performed_tests_clean$Security_region_name <- NULL
 head(cov_performed_tests_clean)
 ```
 
-## Calculate the cumulative sum of all preformed tests and positive tests per date
+## Calculate the cumulative sum of all performed tests and positive tests per date
 ```{r}
 cov_performed_tests_clean <- cov_performed_tests_clean %>%
   group_by(Date_of_statistics) %>%
@@ -213,11 +211,11 @@ total_test_results_by_date <- merge(total_cov_tests_by_date, total_pos_cov_tests
 
 head(total_test_results_by_date)
 ```
-
-## 1. Add population numbers to the correct province in the performed tests dataset
-## 2. Remove not needed variables, in this case the Period variable
-## 3. Rename population amount variable
-## 4. Set duplicates to 0 for to make it easier to plot
+## Create merged dataset called merged_res_count_general_data
+### 1. Add population numbers to the correct province in the performed tests dataset
+### 2. Remove not needed variables, in this case the Period variable
+### 3. Rename population amount variable
+### 4. Set duplicates to 0 for to make it easier to plot
 ```{r}
 # 1
 merged_res_count_general_data <- merge(cov_performed_tests_clean, res_count_per_province_nl, by= c("Province", "Province"))
@@ -234,7 +232,7 @@ merged_res_count_general_data$Resident_count[duplicated(merged_res_count_general
 
 ```
 
-## Transforming and providing analysis on the data (LG 2)
+# Transforming and providing analysis on the data (LG 2)
 
 ## Positive tests from The Netherlands over time
 ```{r}
@@ -262,7 +260,7 @@ cov_general_data_clean %>% ggplot(aes(x = Province, y = Total_reported)) +
 cov_hospital_data_clean %>% ggplot(aes(x = Date_of_statistics, y = Hospital_admission)) + 
   geom_line(color = "darkgreen") + 
   labs(title = "Hospital admissions over time",
-       subtitle = "Date of report: Number of people reported to the GGD who tested positive for SARS-CoV-2 \nat the time of publication.\n\nTotal admissions: Number of hospitalized COVID-19 patients reported by the GGD \nat the time of publication.\n\nFrom 2020-03-10 till 2022-03-10",
+       subtitle = "Date of report: Number of people reported to the GGD who tested positive for SARS-CoV-2 \nat the time of publication.\n\nTotal admissions: Number of hospitalized COVID-19 patients reported by the GGD \nat the time of publication.\n\nFrom 2020-02-27 till 2022-03-29",
        y = "Total admissions",
        x = "Date of report") + 
   theme_fivethirtyeight() +
@@ -271,7 +269,7 @@ cov_hospital_data_clean %>% ggplot(aes(x = Date_of_statistics, y = Hospital_admi
 cov_hospital_data_clean %>% ggplot(aes(x = Province, y = Hospital_admission)) + 
   geom_bar(stat = "identity", fill = "blue") + coord_flip() + 
   labs(title = "Hospital admissions over time",
-       subtitle = "Province: Name of the province.\n\nTotal admissions: Number of Hospitalized COVID-19 patients reported by the GGD \nat the time of publication.\n\nFrom 2020-03-10 till 2022-03-10",
+       subtitle = "Province: Name of the province.\n\nTotal admissions: Number of Hospitalized COVID-19 patients reported by the GGD \nat the time of publication.\n\nFrom 2020-02-27 till 2022-03-29",
        y = "Total admissions",
        x = "Province") + 
   theme_fivethirtyeight() +
@@ -283,7 +281,7 @@ cov_hospital_data_clean %>% ggplot(aes(x = Province, y = Hospital_admission)) +
 cov_general_data_clean %>% ggplot(aes(x = Date_of_publication, y = Deceased)) + 
   geom_line(color = "darkgreen") + 
   labs(title = "Deceased over time",
-       subtitle = "Date of publication: This is the daily number of reports newly received by the RIVM.\nThe time period in which the report was submitted runs\nfrom 10.01 a.m. yesterday to 10.00 a.m. today.\n\nDeceased: The number of deceased persons reported to the GGDs who tested positive \nfor SARS-CoV-2 on date of publication was published by the RIVM. \nThe actual number of SARS-CoV-2 positive persons is higher than the number of reports \nin the surveillance, because not all deceased persons are tested. This is because there \nis no mandatory reporting requirement for deaths of people with a positive test result.\n\nFrom 2020-02-28 till 2022-03-28",
+       subtitle = "Date of publication: This is the daily number of reports newly received by the RIVM.\nThe time period in which the report was submitted runs\nfrom 10.01 a.m. yesterday to 10.00 a.m. today.\n\nDeceased: The number of deceased persons reported to the GGDs who tested positive \nfor SARS-CoV-2 on date of publication was published by the RIVM. \nThe actual number of SARS-CoV-2 positive persons is higher than the number of reports \nin the surveillance, because not all deceased persons are tested. This is because there \nis no mandatory reporting requirement for deaths of people with a positive test result.\n\nFrom 2020-02-28 till 2022-03-30",
        y = "Deceased",
        x = "Date of publication") + 
   theme_fivethirtyeight() +
@@ -292,7 +290,7 @@ cov_general_data_clean %>% ggplot(aes(x = Date_of_publication, y = Deceased)) +
 cov_general_data_clean %>% ggplot(aes(x = Province, y = Deceased)) + 
   geom_bar(stat = "identity", fill = "blue") + coord_flip() + 
   labs(title = "Deceased over time",
-       subtitle = "Province: Name of the province\n\nDeceased: The number of deceased persons reported to the GGDs who tested \npositive for SARS-CoV-2 on date of publication was published by the RIVM.\n\nFrom 2020-02-28 till 2022-03-28",
+       subtitle = "Province: Name of the province\n\nDeceased: The number of deceased persons reported to the GGDs who tested \npositive for SARS-CoV-2 on date of publication was published by the RIVM.\n\nFrom 2020-02-28 till 2022-03-30",
        y = "Deceased",
        x = "Province") + 
   theme_fivethirtyeight() +
@@ -355,7 +353,7 @@ ggplot(data = merged_res_count_general_data, aes(x = Province)) +
   theme(axis.title = element_text())
 ```
 
-## Regression (LG 3)
+# Regression (LG 3)
 
 ## Regression Jamie
 
@@ -494,7 +492,7 @@ summary(lm(Deceased~Positive_tests, data=finalReg))
 ```
 
 ### Explaining the coefficients
-* Estimate: Estimate: The estimate is used to predict the value of the response variable. In this case the estimate is 2.9298884 deceased when there is a total positive tests at 0. By each time a new positive tests is reported, the deceased variable increases with -0.0001729 deceased. At first, this does not make any sense, because it would be very strange if we already confirm one or more deaths when we don't have a positive test returned. In addition, the deceased count decreasing with -0.0001729 by every positive test also does not make much sense either. If I had to think of a reason why the deceased decreases, then my only guess would be that more residents in Limburg were getting vaccined per day during the lifespan of the dataset, but I hardly believe that this is the case.
+* Estimate: The estimate is used to predict the value of the response variable. In this case the estimate is 2.9298884 deceased when there is a total positive tests at 0. By each time a new positive tests is reported, the deceased variable increases with -0.0001729 deceased. This does not really make sense, because it would be very strange if we already confirm one or more deaths when we don't have a positive test returned. In addition, the deceased count decreasing with -0.0001729 by every positive test also does not make much sense either, because then I can make a calculation of the deceased when there are 10000 positive tests returned (2.9298884 + (-0.0001729 * 10000)) = 1.2008884 deceased. If I had to think of a reason why the deceased decreases, then my only guess would be that more residents in Limburg were getting vaccinated per day during the lifespan of the dataset, but I hardly believe that this is the case.
   
 * Std. Error: The standard error is a measure of the uncertainty in the estimate of the coefficient. In this case, the calculated deviation of the deceased variable is 0.2003021, and for the positive tests variable the deviation is 0.0001331. Which means that the std error of the deceased variable falls with 0.2003021 deceased from the regression line, and for the positive tests this is 0.0001331 positive tests.
   
